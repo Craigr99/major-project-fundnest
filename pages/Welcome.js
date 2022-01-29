@@ -31,7 +31,11 @@ const Welcome = ({ navigation }) => {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
       <Text>Welcome to The App!</Text>
       <Button title="Get Auth Token" onPress={getToken} />

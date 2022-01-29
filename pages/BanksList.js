@@ -4,6 +4,7 @@ import {
   SafeAreaView,
   Text,
   TouchableOpacity,
+  StyleSheet,
   View,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -61,6 +62,7 @@ const BanksList = ({ navigation }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        paddingTop: Platform.OS === "android" ? 60 : 0,
       }}
     >
       <Text style={{ fontSize: 32, marginTop: 28 }}>List of banks</Text>
