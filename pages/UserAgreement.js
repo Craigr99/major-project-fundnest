@@ -4,18 +4,19 @@ import {
   Button,
   SafeAreaView,
   Text,
-  View,
-  Linking,
   ScrollView,
   RefreshControl,
   StyleSheet,
 } from "react-native";
 import * as WebBrowser from "expo-web-browser";
+import { useSelector } from "react-redux";
 
-const UserAgreement = ({ navigation, route }) => {
+const UserAgreement = ({ route }) => {
   const [agreementId, setAgreementId] = useState(null);
 
   const [refreshing, setRefreshing] = useState(false);
+
+  const { token } = useSelector((state) => state.auth.value);
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -28,7 +29,7 @@ const UserAgreement = ({ navigation, route }) => {
       axios
         .get(`https://ob.nordigen.com/api/v2/requisitions/${agreementId}`, {
           headers: {
-            Authorization: `Bearer ${route.params.token}`,
+            Authorization: `Bearer ${token}`,
           },
         })
         .then((res) => console.log(res.data.accounts))
@@ -46,7 +47,7 @@ const UserAgreement = ({ navigation, route }) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${route.params.token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       )
@@ -62,7 +63,7 @@ const UserAgreement = ({ navigation, route }) => {
             },
             {
               headers: {
-                Authorization: `Bearer ${route.params.token}`,
+                Authorization: `Bearer ${token}`,
               },
             }
           )

@@ -1,38 +1,16 @@
-import {
-  Button,
-  Image,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  View,
-} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Button, Image, SafeAreaView, Text, View } from "react-native";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import axios from "axios";
 
 const BanksList = ({ navigation }) => {
-  const [token, setToken] = useState("");
+  const { token } = useSelector((state) => state.auth.value);
+
   const [banksList, setBanksList] = useState([]);
 
   useEffect(() => {
-    getToken();
-  }, [banksList, token]);
-
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("access_token");
-      if (token !== null) {
-        // value exists
-        setToken(token);
-        // run get banks function after token is stored
-        getBanks();
-      }
-    } catch (e) {
-      // error reading value
-      console.log(e);
-    }
-  };
+    getBanks();
+  }, [banksList]);
 
   const getBanks = () => {
     axios
@@ -52,7 +30,6 @@ const BanksList = ({ navigation }) => {
     navigation.navigate("UserAgreement", {
       name: props.name,
       id: props.id,
-      token: token,
     });
   };
 
