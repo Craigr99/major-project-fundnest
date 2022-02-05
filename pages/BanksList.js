@@ -1,7 +1,20 @@
-import { Button, Image, SafeAreaView, Text, View } from "react-native";
+import {
+  Button,
+  Image,
+  SafeAreaView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import {
+  NativeBaseProvider,
+  Box,
+  ScrollView,
+  Text,
+  Divider,
+} from "native-base";
 
 const BanksList = ({ navigation }) => {
   const { token } = useSelector((state) => state.auth.value);
@@ -34,49 +47,41 @@ const BanksList = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        paddingTop: Platform.OS === "android" ? 60 : 0,
-      }}
-    >
-      <Text style={{ fontSize: 32, marginTop: 28 }}>List of banks</Text>
-      <View>
-        {banksList ? (
-          banksList.map((bank, index) => (
-            <View
-              key={index}
-              style={{
-                flex: 1,
-                display: "flex",
-                justifyContent: "space-evenly",
-              }}
-            >
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
-                <Image
-                  style={{ width: 50, height: 50 }}
-                  source={{ uri: bank.logo }}
-                />
-                <Text>{bank.name}</Text>
-                <Button title="Select" onPress={() => selectBank(bank)} />
+    <NativeBaseProvider>
+      <Box bg="trueGray.300">
+        <Box mx="10" my="24">
+          <ScrollView bg="white" p="8" borderRadius="md" border="1">
+            <Text fontSize="2xl" fontWeight="medium" mb="8">
+              Select your bank:
+            </Text>
+            {banksList ? (
+              banksList.map((bank, index) => (
+                <Box key={index}>
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                    onPress={() => selectBank(bank)}
+                  >
+                    <Image
+                      style={{ width: 48, height: 48 }}
+                      source={{ uri: bank.logo }}
+                    />
+                    <Text ml="3">{bank.name}</Text>
+                  </TouchableOpacity>
+                  <Divider my="4" />
+                </Box>
+              ))
+            ) : (
+              <View>
+                <Text>No banks found</Text>
               </View>
-            </View>
-          ))
-        ) : (
-          <View>
-            <Text>No banks found</Text>
-          </View>
-        )}
-      </View>
-    </SafeAreaView>
+            )}
+          </ScrollView>
+        </Box>
+      </Box>
+    </NativeBaseProvider>
   );
 };
 
