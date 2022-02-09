@@ -10,13 +10,52 @@ import {
   Text,
   WarningOutlineIcon,
 } from "native-base";
-import React from "react";
-import { View } from "react-native";
+import React, { useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useDispatch } from "react-redux";
 import PiggyBank from "../../assets/img/icon_piggy_bank.svg";
+import { SECRET_ID, SECRET_KEY } from "@env";
+import { setAuthToken } from "../../features/auth";
+import axios from "axios";
 
 const Register = ({ navigation }) => {
+  const dispatch = useDispatch();
+
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [passcode, setPasscode] = useState("");
+
+  const register = () => {
+    // store user in database
+    axios
+      .post("http://localhost:8000/users/register", {
+        name: name,
+        email: email,
+        passcode: passcode,
+        number: number,
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+
+    // create a nordigen access token
+    // navigate to banks list screen
+    axios
+      .post("https://ob.nordigen.com/api/v2/token/new/", {
+        secret_id: SECRET_ID,
+        secret_key: SECRET_KEY,
+      })
+      .then((res) => {
+        dispatch(setAuthToken({ token: res.data.access }));
+        // navigation.navigate("BanksList");
+        navigation.navigate("Home");
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <SafeAreaProvider>
       <KeyboardAwareScrollView>
@@ -35,7 +74,13 @@ const Register = ({ navigation }) => {
               <Stack space={4}>
                 <FormControl isRequired>
                   <FormControl.Label>Full Name</FormControl.Label>
-                  <Input type="text" size="2xl" variant="filled" />
+                  <Input
+                    name="name"
+                    type="text"
+                    size="2xl"
+                    variant="filled"
+                    onChangeText={(newText) => setName(newText)}
+                  />
                   <FormControl.ErrorMessage
                     leftIcon={<WarningOutlineIcon size="xs" />}
                   >
@@ -44,7 +89,12 @@ const Register = ({ navigation }) => {
                 </FormControl>
                 <FormControl isRequired>
                   <FormControl.Label>Phone Number</FormControl.Label>
-                  <Input type="number" size="2xl" variant="filled" />
+                  <Input
+                    type="number"
+                    size="2xl"
+                    variant="filled"
+                    onChangeText={(newText) => setNumber(newText)}
+                  />
                   <FormControl.ErrorMessage
                     leftIcon={<WarningOutlineIcon size="xs" />}
                   >
@@ -53,7 +103,12 @@ const Register = ({ navigation }) => {
                 </FormControl>
                 <FormControl isRequired>
                   <FormControl.Label>Email Address</FormControl.Label>
-                  <Input type="text" size="2xl" variant="filled" />
+                  <Input
+                    type="text"
+                    size="2xl"
+                    variant="filled"
+                    onChangeText={(newText) => setEmail(newText)}
+                  />
                   <FormControl.ErrorMessage
                     leftIcon={<WarningOutlineIcon size="xs" />}
                   >
@@ -62,7 +117,12 @@ const Register = ({ navigation }) => {
                 </FormControl>
                 <FormControl isRequired>
                   <FormControl.Label>Passcode</FormControl.Label>
-                  <Input type="password" size="2xl" variant="filled" />
+                  <Input
+                    type="password"
+                    size="2xl"
+                    variant="filled"
+                    onChangeText={(newText) => setPasscode(newText)}
+                  />
                   <FormControl.ErrorMessage
                     leftIcon={<WarningOutlineIcon size="xs" />}
                   >
@@ -75,15 +135,15 @@ const Register = ({ navigation }) => {
                   mt="6"
                   bg="blue.500"
                   py="3"
-                  onPress={() => navigation.navigate("Login")}
+                  onPress={register}
                 >
                   Sign Up
                 </Button>
                 <Text alignSelf="center">
                   Already have an account?{" "}
                   <Link
-                    isUnderlined={false}
                     onPress={() => navigation.navigate("Login")}
+                    isUnderlined={false}
                     _text={{
                       color: "blue.600",
                     }}
