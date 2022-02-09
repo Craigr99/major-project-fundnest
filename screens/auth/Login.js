@@ -67,13 +67,7 @@ const Login = ({ navigation }) => {
                     Atleast 6 characters are required.
                   </FormControl.ErrorMessage>
                 </FormControl>
-                <Button
-                  size="lg"
-                  mb="4"
-                  bg="blue.500"
-                  py="3"
-                  onPress={() => navigation.navigate("Register")}
-                >
+                <Button size="lg" mb="4" bg="blue.500" py="3">
                   Sign In
                 </Button>
                 <Text alignSelf="center">

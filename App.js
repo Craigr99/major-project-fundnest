@@ -1,11 +1,12 @@
 import { View, Text, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NativeBaseProvider } from "native-base";
 
+// Redux
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import authReducer from "./features/auth";
-import { NativeBaseProvider } from "native-base";
 
 // SCREENS
 import Welcome from "./screens/auth/Welcome";
@@ -13,6 +14,7 @@ import BanksList from "./screens/BanksList";
 import UserAgreement from "./screens/UserAgreement";
 import Register from "./screens/auth/Register";
 import Login from "./screens/auth/Login";
+import Home from "./screens/Home";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,7 +32,7 @@ export default function App() {
           <Stack.Navigator>
             <Stack.Screen
               options={{ headerShown: false }}
-              name="Home"
+              name="Welcome"
               component={Welcome}
               // options={{ title: "Welcome" }}
             />
@@ -56,7 +58,7 @@ export default function App() {
               component={UserAgreement}
               options={{ headerShown: false }}
             />
-            {/* <Stack.Screen name="Profile" component={ProfileScreen} /> */}
+            <Stack.Screen name="Home" component={Home} />
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>
