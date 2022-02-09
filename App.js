@@ -7,6 +7,7 @@ import { NativeBaseProvider } from "native-base";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import authReducer from "./features/auth";
+import userReducer from "./features/user";
 
 // SCREENS
 import Welcome from "./screens/auth/Welcome";
@@ -21,6 +22,7 @@ const Stack = createNativeStackNavigator();
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    user: userReducer,
   },
 });
 
@@ -58,7 +60,11 @@ export default function App() {
               component={UserAgreement}
               options={{ headerShown: false }}
             />
-            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{ headerShown: false }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>

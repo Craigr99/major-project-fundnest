@@ -17,15 +17,16 @@ import { useDispatch } from "react-redux";
 import PiggyBank from "../../assets/img/icon_piggy_bank.svg";
 import { SECRET_ID, SECRET_KEY } from "@env";
 import { setAuthToken } from "../../features/auth";
+import { setUser } from "../../features/user";
 import axios from "axios";
 
 const Register = ({ navigation }) => {
   const dispatch = useDispatch();
 
-  const [name, setName] = useState("");
-  const [number, setNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [passcode, setPasscode] = useState("");
+  const [name, setName] = useState("John Doe");
+  const [number, setNumber] = useState("0851263372");
+  const [email, setEmail] = useState("john@doe.com");
+  const [passcode, setPasscode] = useState("132123123");
 
   const register = () => {
     // store user in database
@@ -38,6 +39,7 @@ const Register = ({ navigation }) => {
       })
       .then((res) => {
         console.log(res.data);
+        dispatch(setUser({ name: name, email: email, number: number }));
       })
       .catch((err) => console.log(err));
 
@@ -81,6 +83,7 @@ const Register = ({ navigation }) => {
                     variant="filled"
                     onChangeText={(newText) => setName(newText)}
                   />
+
                   <FormControl.ErrorMessage
                     leftIcon={<WarningOutlineIcon size="xs" />}
                   >
