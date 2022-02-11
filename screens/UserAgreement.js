@@ -16,20 +16,22 @@ const UserAgreement = ({ route }) => {
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const { token } = useSelector((state) => state.auth.value);
+  const { nordigenToken } = useSelector((state) => state.auth.nordigenToken);
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
 
+  // on refresh screen
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     wait(1000).then(() => {
       console.log("refreshed!!", agreementId);
+      console.log(nordigenToken);
       axios
-        .get(`https://ob.nordigen.com/api/v2/requisitions/${agreementId}`, {
+        .get(`https://ob.nordigen.com/api/v2/requisitions/${agreementId}/`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${nordigenToken}`,
           },
         })
         .then((res) => console.log(res.data.accounts))
@@ -43,11 +45,12 @@ const UserAgreement = ({ route }) => {
       .post(
         "https://ob.nordigen.com/api/v2/agreements/enduser/",
         {
-          institution_id: route.params.id,
+          // institution_id: route.params.id,
+          institution_id: "SANDBOXFINANCE_SFIN0000", // test bank
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${nordigenToken}`,
           },
         }
       )
@@ -59,15 +62,16 @@ const UserAgreement = ({ route }) => {
             {
               redirect: "https://keen-bohr-87e0df.netlify.app/",
               // institution_id: route.params.id,
-              institution_id: "SANDBOXFINANCE_SFIN0000",
+              institution_id: "SANDBOXFINANCE_SFIN0000", // test bank
             },
             {
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${nordigenToken}`,
               },
             }
           )
           .then((res) => {
+            console.log(res.data.id);
             setAgreementId(res.data.id);
             let result = WebBrowser.openBrowserAsync(
               res.data.link

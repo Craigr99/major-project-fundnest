@@ -1,17 +1,40 @@
+import axios from "axios";
 import {
   Avatar,
   Box,
+  Button,
   Container,
   Flex,
   HamburgerIcon,
+  Link,
   Text,
   View,
 } from "native-base";
 import { SafeAreaView } from "react-native";
 import { useSelector } from "react-redux";
 
-const Home = () => {
+const Home = ({ navigation }) => {
   const user = useSelector((state) => state.user.value);
+  const nordigenToken = useSelector((state) => state.auth.nordigenToken);
+  const authToken = useSelector((state) => state.auth.authToken);
+
+  const logoutUser = () => {
+    axios
+      .post(
+        "http://localhost:8000/users/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authToken.authToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        navigation.navigate("Welcome");
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <View bg="dark.100" h="1/2" w="full" borderBottomRadius="36">
@@ -31,10 +54,9 @@ const Home = () => {
             <Flex ml="6" direction="column">
               <Text fontSize="lg" color="amber.400">
                 Welcome back,
-                {/* {user.name} */}
               </Text>
               <Text fontSize="3xl" color="white" fontWeight="bold">
-                John Doe
+                {user.name}
               </Text>
             </Flex>
 
@@ -46,6 +68,9 @@ const Home = () => {
             />
           </Flex>
         </Box>
+        <Button size="lg" mb="4" bg="blue.500" py="3" onPress={logoutUser}>
+          Logout
+        </Button>
       </SafeAreaView>
     </View>
   );
