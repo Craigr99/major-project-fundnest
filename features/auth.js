@@ -4,14 +4,17 @@ const initialStateValue = "";
 
 export const authSlice = createSlice({
   name: "auth",
-  initialState: { value: initialStateValue },
+  initialState: { authToken: initialStateValue, nordigenToken: "" },
   reducers: {
     setAuthToken: (state, action) => {
-      state.value = action.payload;
+      state.authToken = action.payload;
+    },
+    setNordigenToken: (state, action) => {
+      state.nordigenToken = action.payload;
     },
   },
 });
 
-export const { setAuthToken } = authSlice.actions;
+export const { setAuthToken, setNordigenToken } = authSlice.actions;
 
 export default authSlice.reducer;

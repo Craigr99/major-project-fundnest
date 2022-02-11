@@ -16,7 +16,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import PiggyBank from "../../assets/img/icon_piggy_bank.svg";
 import { SECRET_ID, SECRET_KEY } from "@env";
-import { setAuthToken } from "../../features/auth";
+import { setAuthToken, setNordigenToken } from "../../features/auth";
 import { setUser } from "../../features/user";
 import axios from "axios";
 
@@ -25,7 +25,7 @@ const Register = ({ navigation }) => {
 
   const [name, setName] = useState("John Doe");
   const [number, setNumber] = useState("0851263372");
-  const [email, setEmail] = useState("john@doe.com");
+  const [email, setEmail] = useState("");
   const [passcode, setPasscode] = useState("132123123");
 
   const register = () => {
@@ -39,6 +39,7 @@ const Register = ({ navigation }) => {
       })
       .then((res) => {
         console.log(res.data);
+        dispatch(setAuthToken({ authToken: res.data.auth_token }));
         dispatch(setUser({ name: name, email: email, number: number }));
       })
       .catch((err) => console.log(err));
@@ -51,9 +52,9 @@ const Register = ({ navigation }) => {
         secret_key: SECRET_KEY,
       })
       .then((res) => {
-        dispatch(setAuthToken({ token: res.data.access }));
-        // navigation.navigate("BanksList");
-        navigation.navigate("Home");
+        dispatch(setNordigenToken({ nordigenToken: res.data.access }));
+        console.log(res.data.access);
+        navigation.navigate("BanksList");
       })
       .catch((err) => console.log(err));
   };

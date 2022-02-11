@@ -17,8 +17,7 @@ import {
 } from "native-base";
 
 const BanksList = ({ navigation }) => {
-  const { token } = useSelector((state) => state.auth.value);
-
+  const { nordigenToken } = useSelector((state) => state.auth.nordigenToken);
   const [banksList, setBanksList] = useState([]);
 
   useEffect(() => {
@@ -29,7 +28,7 @@ const BanksList = ({ navigation }) => {
     axios
       .get("https://ob.nordigen.com/api/v2/institutions/?country=ie", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${nordigenToken}`,
         },
       })
       .then((res) => {

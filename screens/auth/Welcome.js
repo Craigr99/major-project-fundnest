@@ -1,15 +1,5 @@
-import axios from "axios";
-import { Image, SafeAreaView, View } from "react-native";
-import {
-  Center,
-  Container,
-  Heading,
-  Text,
-  NativeBaseProvider,
-  Box,
-  Button,
-  extendTheme,
-} from "native-base";
+import { SafeAreaView } from "react-native";
+import { Center, Heading, Text, Box, Button, extendTheme } from "native-base";
 import Vault from "../../assets/img/icon_vault.svg";
 
 // const SECRET_ID = "4bd50407-2893-45cc-aa67-e5cca02fb0db";
@@ -30,7 +20,12 @@ const Welcome = ({ navigation }) => {
         h="xl"
       >
         <Center>
-          <Heading size="2xl" color="dark.50">
+          <Heading
+            fontFamily="body"
+            fontWeight="400"
+            size="2xl"
+            color="dark.50"
+          >
             App Name
           </Heading>
         </Center>
@@ -39,7 +34,13 @@ const Welcome = ({ navigation }) => {
         </Center>
       </Box>
       <Box mx="6">
-        <Text alignSelf="center" fontSize="lg" my="10">
+        <Text
+          fontFamily="body"
+          fontWeight={500}
+          alignSelf="center"
+          fontSize="lg"
+          my="10"
+        >
           Best way to save your money!
         </Text>
         <Button
