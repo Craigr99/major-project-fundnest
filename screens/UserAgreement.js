@@ -11,9 +11,8 @@ import {
 import * as WebBrowser from "expo-web-browser";
 import { useSelector } from "react-redux";
 
-const UserAgreement = ({ route }) => {
+const UserAgreement = ({ navigation, route }) => {
   const [agreementId, setAgreementId] = useState(null);
-
   const [refreshing, setRefreshing] = useState(false);
 
   const { nordigenToken } = useSelector((state) => state.auth.nordigenToken);
@@ -34,11 +33,16 @@ const UserAgreement = ({ route }) => {
             Authorization: `Bearer ${nordigenToken}`,
           },
         })
-        .then((res) => console.log(res.data.accounts))
+        .then((res) => {
+          console.log("accounts", res.data.accounts);
+          navigation.navigate("ListAccounts", {
+            accounts: res.data.accounts,
+          });
+        })
         .catch((err) => console.log(err));
       setRefreshing(false);
     });
-  }, []);
+  }, [agreementId]);
 
   const createAgreement = () => {
     axios
@@ -54,7 +58,6 @@ const UserAgreement = ({ route }) => {
           },
         }
       )
-      // .then((res) => console.log(res))
       .then(() => {
         axios
           .post(

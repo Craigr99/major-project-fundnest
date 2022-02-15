@@ -48,9 +48,12 @@ const Welcome = ({ navigation }) => {
           mb="4"
           bg="blue.500"
           py="3"
+          borderRadius="lg"
           onPress={() => navigation.navigate("Register")}
         >
-          Sign Up
+          <Text fontWeight={500} fontFamily="body" color="white" fontSize="md">
+            Sign Up
+          </Text>
         </Button>
         <Button
           size="lg"
@@ -58,9 +61,12 @@ const Welcome = ({ navigation }) => {
           borderColor="gray.400"
           bg="white"
           py="3"
+          borderRadius="lg"
           onPress={() => navigation.navigate("Login")}
         >
-          Sign In
+          <Text Text fontWeight={500} fontFamily="body" fontSize="md">
+            Sign In
+          </Text>
         </Button>
       </Box>
     </SafeAreaView>
