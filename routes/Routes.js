@@ -16,11 +16,6 @@ const Routes = () => {
     <>
       <Stack.Navigator>
         <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
           options={{ headerShown: false }}
           name="Welcome"
           component={Welcome}
@@ -51,6 +46,11 @@ const Routes = () => {
         <Stack.Screen
           name="ListAccounts"
           component={ListAccounts}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={Home}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

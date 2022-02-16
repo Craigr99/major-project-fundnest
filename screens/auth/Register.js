@@ -23,7 +23,7 @@ import axios from "axios";
 const Register = ({ navigation }) => {
   const dispatch = useDispatch();
 
-  const [name, setName] = useState("John Doe");
+  const [name, setName] = useState("Craig Redmond");
   const [number, setNumber] = useState("0851263372");
   const [email, setEmail] = useState("");
   const [passcode, setPasscode] = useState("132123123");

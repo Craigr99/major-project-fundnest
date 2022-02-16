@@ -8,6 +8,7 @@ import { Text, Box, Heading, Pressable } from "native-base";
 const ListAccounts = ({ navigation, route }) => {
   const [account, setAccount] = useState({});
   const { nordigenToken } = useSelector((state) => state.auth.nordigenToken);
+  const { authToken } = useSelector((state) => state.auth.authToken);
 
   // Get account details
   useEffect(() => {
@@ -26,6 +27,28 @@ const ListAccounts = ({ navigation, route }) => {
       .catch((err) => console.log(err));
   });
 
+  const selectAccount = () => {
+    axios
+      .post(
+        "http://localhost:8000/accounts/",
+        {
+          account_id: route.params.accounts[0],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        // navigate to home screen with the account ID passed
+        navigation.navigate("Home", {
+          accountID: res.data.accounts[0].account_id,
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <SafeAreaView>
       <Heading alignSelf="center" fontSize="3xl" mb="5">
@@ -35,13 +58,7 @@ const ListAccounts = ({ navigation, route }) => {
         // TODO : on press the ID of the account picked should
         // be stored in the database as the users account
         // as this ID is used to reference and get access to the account's transactions.
-        <Pressable
-          onPress={() =>
-            navigation.navigate("Home", {
-              accountID: route.params.accounts[0],
-            })
-          }
-        >
+        <Pressable onPress={selectAccount}>
           <Box
             mx="8"
             borderWidth="1"

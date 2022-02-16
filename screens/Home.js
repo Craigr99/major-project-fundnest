@@ -27,19 +27,22 @@ const Home = ({ navigation, route }) => {
   const [accountBalance, setAccountBalance] = useState("");
 
   // get account balance
-  // useState(() => {
-  //   axios
-  //     .get(
-  //       `https://ob.nordigen.com/api/v2/accounts/${route.params.accountID}/balances/`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${nordigenToken.nordigenToken}`,
-  //         },
-  //       }
-  //     )
-  //     .then((res) => setAccountBalance(res.data.balances[0]))
-  //     .catch((err) => console.log(err));
-  // });
+  useState(() => {
+    axios
+      .get(
+        `https://ob.nordigen.com/api/v2/accounts/${route.params.accountID}/balances/`,
+        {
+          headers: {
+            Authorization: `Bearer ${nordigenToken.nordigenToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data.balances[0]);
+        setAccountBalance(res.data.balances[0]);
+      })
+      .catch((err) => console.log(err));
+  });
 
   const logoutUser = () => {
     axios
@@ -94,13 +97,7 @@ const Home = ({ navigation, route }) => {
         {/* <Button size="lg" mb="4" bg="blue.500" py="3" onPress={logoutUser}>
           Logout
         </Button> */}
-        {accountBalance ? (
-          <Text color="white">
-            Balance available : €{accountBalance.balanceAmount.amount}
-          </Text>
-        ) : (
-          <Text></Text>
-        )}
+
         {/* Instant Cash Card */}
         <Box
           mx="5"
@@ -119,9 +116,16 @@ const Home = ({ navigation, route }) => {
             </Text>
             <Text color="coolGray.500">Cash Available</Text>
           </Flex>
-          <Text fontWeight={700} fontSize="xl">
-            €429.00
-          </Text>
+          {accountBalance ? (
+            <Text fontWeight={700} fontSize="xl">
+              €{accountBalance.balanceAmount.amount}
+              {/* €429.00 */}
+            </Text>
+          ) : (
+            <Text fontWeight={700} fontSize="xl">
+              €0.00
+            </Text>
+          )}
         </Box>
 
         {/* Savings Card */}
