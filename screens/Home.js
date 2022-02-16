@@ -12,6 +12,8 @@ import {
   Progress,
   HStack,
   Spacer,
+  ScrollView,
+  FlatList,
 } from "native-base";
 import { useState } from "react";
 import { SafeAreaView } from "react-native";
@@ -30,18 +32,32 @@ const Home = ({ navigation, route }) => {
   useState(() => {
     axios
       .get(
-        `https://ob.nordigen.com/api/v2/accounts/${route.params.accountID}/balances/`,
+        `https://ob.nordigen.com/api/v2/accounts/1048f194-cb13-4cee-a55c-5ef6d8661341/balances/`,
         {
           headers: {
-            Authorization: `Bearer ${nordigenToken.nordigenToken}`,
+            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ1MTMwNDMwLCJqdGkiOiI4OTlmOTAwYWJlNGY0ZmUzOWZmOWEzOTBmYmYwMTg3ZCIsImlkIjo3MDA3LCJzZWNyZXRfaWQiOiI0YmQ1MDQwNy0yODkzLTQ1Y2MtYWE2Ny1lNWNjYTAyZmIwZGIiLCJhbGxvd2VkX2NpZHJzIjpbIjAuMC4wLjAvMCIsIjo6LzAiXX0.IRIj30gfNIBhQ_Lpb1NgCDlo44GwJFOONRUhqFq6b5Y`,
           },
         }
       )
       .then((res) => {
-        console.log(res.data.balances[0]);
         setAccountBalance(res.data.balances[0]);
       })
       .catch((err) => console.log(err));
+
+    // axios
+    //   .get(
+    //     `https://ob.nordigen.com/api/v2/accounts/${route.params.accountID}/balances/`,
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${nordigenToken.nordigenToken}`,
+    //       },
+    //     }
+    //   )
+    //   .then((res) => {
+    //     console.log(res.data.balances[0]);
+    //     setAccountBalance(res.data.balances[0]);
+    //   })
+    //   .catch((err) => console.log(err));
   });
 
   const logoutUser = () => {
