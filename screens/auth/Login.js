@@ -18,6 +18,9 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../features/user";
 import { setAuthToken } from "../../features/auth";
+import { setNordigenToken } from "../../features/auth";
+import { getUserAccount } from "../../features/user";
+import { SECRET_ID, SECRET_KEY } from "@env";
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -37,7 +40,37 @@ const Login = ({ navigation }) => {
         dispatch(
           setUser({ name: res.data.info.name, email: email, number: "" })
         );
-        navigation.navigate("Home");
+
+        // check if user has existing account(s)
+        axios
+          .get("http://localhost:8000/accounts/", {
+            headers: {
+              Authorization: `Bearer ${res.data.auth_token}`,
+            },
+          })
+          .then((res) => {
+            if (res.data.accounts.length > 0) {
+              dispatch(getUserAccount({ accountID: "12345 test" }));
+              navigation.navigate("TabScreens");
+            } else {
+              // no existing accounts
+              // create a nordigen access token
+              // navigate to banks list screen
+              axios
+                .post("https://ob.nordigen.com/api/v2/token/new/", {
+                  secret_id: SECRET_ID,
+                  secret_key: SECRET_KEY,
+                })
+                .then((res) => {
+                  dispatch(
+                    setNordigenToken({ nordigenToken: res.data.access })
+                  );
+                  navigation.navigate("BanksList");
+                })
+                .catch((err) => console.log(err));
+            }
+          })
+          .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
   };
