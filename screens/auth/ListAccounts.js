@@ -3,7 +3,15 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
-import { Text, Box, Heading, Pressable } from "native-base";
+import {
+  Text,
+  Box,
+  Heading,
+  Pressable,
+  Center,
+  Skeleton,
+  VStack,
+} from "native-base";
 
 const ListAccounts = ({ navigation, route }) => {
   const [account, setAccount] = useState({});
@@ -42,7 +50,7 @@ const ListAccounts = ({ navigation, route }) => {
       )
       .then((res) => {
         // navigate to home screen with the account ID passed
-        navigation.navigate("Home", {
+        navigation.navigate("TabScreens", {
           accountID: res.data.accounts[0].account_id,
         });
       })
@@ -82,7 +90,21 @@ const ListAccounts = ({ navigation, route }) => {
           </Box>
         </Pressable>
       ) : (
-        <Text></Text>
+        <Center w="100%">
+          <VStack
+            w="100%"
+            maxW="400"
+            borderWidth="2"
+            space={8}
+            overflow="hidden"
+            rounded="md"
+            _light={{
+              borderColor: "coolGray.200",
+            }}
+          >
+            <Skeleton.Text px="6" py="8" lines={3} startColor="coolGray.300" />
+          </VStack>
+        </Center>
       )}
     </SafeAreaView>
   );

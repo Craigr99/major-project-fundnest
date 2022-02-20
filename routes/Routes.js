@@ -6,12 +6,15 @@ import BanksList from "../screens/BanksList";
 import UserAgreement from "../screens/UserAgreement";
 import Register from "../screens/auth/Register";
 import Login from "../screens/auth/Login";
-import Home from "../screens/Home";
+import UserIndex from "../screens/user/Index";
+import TransactionsIndex from "../screens/transactions/Index";
 import ListAccounts from "../screens/auth/ListAccounts";
+import SavingsIndex from "../screens/savings/Index";
+import BillsIndex from "../screens/bills/Index";
+import AddItemIndex from "../screens/AddItemIndex";
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import RecentTransactions from "../screens/auth/RecentTransactions";
 
 const Routes = () => {
   const Stack = createNativeStackNavigator();
@@ -24,32 +27,73 @@ const Routes = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === "Home") {
-            iconName = focused ? "home" : "home";
-          } else if (route.name === "RecentTransactions") {
+          if (route.name === "UserIndex") {
+            iconName = focused ? "home" : "home-outline";
+          } else if (route.name === "TransactionsIndex") {
             iconName = focused ? "receipt-outline" : "receipt-outline";
+          } else if (route.name === "SavingsIndex") {
+            iconName = focused ? "grid" : "grid-outline";
+          } else if (route.name === "AddItemIndex") {
+            iconName = focused ? "add-outline" : "add-outline";
+          } else if (route.name === "BillsIndex") {
+            iconName = focused ? "calendar" : "calendar-outline";
           }
 
           // You can return any component that you like here!
-          return <Ionicons name={iconName} size={26} color={color} />;
+          return (
+            <Ionicons
+              name={iconName}
+              size={route.name === "AddItemIndex" ? 48 : 26}
+              color={color}
+            />
+          );
         },
         tabBarActiveTintColor: "#4584FF",
         tabBarInactiveTintColor: "#6F6F6F",
+        tabBarStyle: { height: 90 },
       })}
     >
       <Tab.Screen
-        name="Home"
-        component={Home}
+        name="UserIndex"
+        component={UserIndex}
         options={{
+          tabBarLabel: "Home",
           tabBarLabelStyle: { fontSize: 13 },
           headerShown: false,
         }}
       />
       <Tab.Screen
-        name="RecentTransactions"
-        component={RecentTransactions}
+        name="SavingsIndex"
+        component={SavingsIndex}
         options={{
-          tabBarLabel: "Transactions",
+          tabBarLabel: "Savings",
+          tabBarLabelStyle: { fontSize: 13 },
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="AddItemIndex"
+        component={AddItemIndex}
+        options={{
+          headerShown: false,
+          tabBarLabelStyle: { display: "none" },
+        }}
+      />
+      <Tab.Screen
+        name="BillsIndex"
+        component={BillsIndex}
+        options={{
+          tabBarLabel: "Bills",
+          tabBarLabelStyle: { fontSize: 13 },
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="TransactionsIndex"
+        component={TransactionsIndex}
+        options={{
+          tabBarLabel: "Recent",
+          tabBarLabelStyle: { fontSize: 13 },
           headerShown: false,
         }}
       />

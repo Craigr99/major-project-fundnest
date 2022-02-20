@@ -14,19 +14,24 @@ import {
   Spacer,
   ScrollView,
   FlatList,
+  Pressable,
+  Spinner,
 } from "native-base";
 import { useState } from "react";
 import { SafeAreaView } from "react-native";
 import { useSelector } from "react-redux";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 
-const Home = ({ navigation, route }) => {
+const Index = ({ navigation, route }) => {
   const testarray = [1, 2, 3];
   // State
   const user = useSelector((state) => state.user.value);
+  const userAccountID = useSelector((state) => state.user.accountID);
   const nordigenToken = useSelector((state) => state.auth.nordigenToken);
   const authToken = useSelector((state) => state.auth.authToken);
   const [accountBalance, setAccountBalance] = useState("");
+
+  // console.log("id", userAccountID.accountID);
 
   // get account balance
   useState(() => {
@@ -35,7 +40,7 @@ const Home = ({ navigation, route }) => {
         `https://ob.nordigen.com/api/v2/accounts/1048f194-cb13-4cee-a55c-5ef6d8661341/balances/`,
         {
           headers: {
-            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ1MTMwNDMwLCJqdGkiOiI4OTlmOTAwYWJlNGY0ZmUzOWZmOWEzOTBmYmYwMTg3ZCIsImlkIjo3MDA3LCJzZWNyZXRfaWQiOiI0YmQ1MDQwNy0yODkzLTQ1Y2MtYWE2Ny1lNWNjYTAyZmIwZGIiLCJhbGxvd2VkX2NpZHJzIjpbIjAuMC4wLjAvMCIsIjo6LzAiXX0.IRIj30gfNIBhQ_Lpb1NgCDlo44GwJFOONRUhqFq6b5Y`,
+            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ1Mjc1NzU5LCJqdGkiOiI2ZGViY2YzMzdiMzI0OGYxOGJmZTIyYjY1YjIxMTg2ZSIsImlkIjo3MDA3LCJzZWNyZXRfaWQiOiI0YmQ1MDQwNy0yODkzLTQ1Y2MtYWE2Ny1lNWNjYTAyZmIwZGIiLCJhbGxvd2VkX2NpZHJzIjpbIjAuMC4wLjAvMCIsIjo6LzAiXX0.gIy33OIWw7ytffJqLu3QqmyRX0BldHpZ-qFeI-YZ3oo`,
           },
         }
       )
@@ -44,20 +49,20 @@ const Home = ({ navigation, route }) => {
       })
       .catch((err) => console.log(err));
 
-    // axios
-    //   .get(
-    //     `https://ob.nordigen.com/api/v2/accounts/${route.params.accountID}/balances/`,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${nordigenToken.nordigenToken}`,
-    //       },
-    //     }
-    //   )
-    //   .then((res) => {
-    //     console.log(res.data.balances[0]);
-    //     setAccountBalance(res.data.balances[0]);
-    //   })
-    //   .catch((err) => console.log(err));
+    //   axios
+    //     .get(
+    //       `https://ob.nordigen.com/api/v2/accounts/${route.params.accountID}/balances/`,
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ${nordigenToken.nordigenToken}`,
+    //         },
+    //       }
+    //     )
+    //     .then((res) => {
+    //       console.log(res.data.balances[0]);
+    //       setAccountBalance(res.data.balances[0]);
+    //     })
+    //     .catch((err) => console.log(err));
   });
 
   const logoutUser = () => {
@@ -88,7 +93,7 @@ const Home = ({ navigation, route }) => {
               alignSelf="center"
               size="xl"
               source={{
-                uri: "https://images.unsplash.com/photo-1510771463146-e89e6e86560e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=627&q=80",
+                uri: "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
               }}
             >
               RB
@@ -138,9 +143,7 @@ const Home = ({ navigation, route }) => {
               {/* €429.00 */}
             </Text>
           ) : (
-            <Text fontWeight={700} fontSize="xl">
-              €0.00
-            </Text>
+            <Spinner color="amber.500" size="sm" />
           )}
         </Box>
 
@@ -191,7 +194,21 @@ const Home = ({ navigation, route }) => {
             ))}
             {/* Add button */}
             <Box alignSelf="center" alignItems="center" w="48%">
-              <Text>btn</Text>
+              <Pressable onPress={() => console.log("press")}>
+                <Box
+                  bg="white"
+                  w="68"
+                  h="68"
+                  borderWidth="1"
+                  borderColor="coolGray.200"
+                  shadow="1"
+                  rounded="full"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Ionicons name="add" size={32} />
+                </Box>
+              </Pressable>
             </Box>
           </Flex>
         </Box>
@@ -200,4 +217,4 @@ const Home = ({ navigation, route }) => {
   );
 };
 
-export default Home;
+export default Index;
