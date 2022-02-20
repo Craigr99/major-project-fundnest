@@ -11,47 +11,53 @@ import {
 import * as WebBrowser from "expo-web-browser";
 import { useSelector } from "react-redux";
 
-const UserAgreement = ({ route }) => {
+const UserAgreement = ({ navigation, route }) => {
   const [agreementId, setAgreementId] = useState(null);
-
   const [refreshing, setRefreshing] = useState(false);
 
-  const { token } = useSelector((state) => state.auth.value);
+  const { nordigenToken } = useSelector((state) => state.auth.nordigenToken);
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
 
+  // on refresh screen
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     wait(1000).then(() => {
       console.log("refreshed!!", agreementId);
+      console.log(nordigenToken);
       axios
-        .get(`https://ob.nordigen.com/api/v2/requisitions/${agreementId}`, {
+        .get(`https://ob.nordigen.com/api/v2/requisitions/${agreementId}/`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${nordigenToken}`,
           },
         })
-        .then((res) => console.log(res.data.accounts))
+        .then((res) => {
+          console.log("accounts", res.data.accounts);
+          navigation.navigate("ListAccounts", {
+            accounts: res.data.accounts,
+          });
+        })
         .catch((err) => console.log(err));
       setRefreshing(false);
     });
-  }, []);
+  }, [agreementId]);
 
   const createAgreement = () => {
     axios
       .post(
         "https://ob.nordigen.com/api/v2/agreements/enduser/",
         {
-          institution_id: route.params.id,
+          // institution_id: route.params.id,
+          institution_id: "SANDBOXFINANCE_SFIN0000", // test bank
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${nordigenToken}`,
           },
         }
       )
-      // .then((res) => console.log(res))
       .then(() => {
         axios
           .post(
@@ -59,15 +65,16 @@ const UserAgreement = ({ route }) => {
             {
               redirect: "https://keen-bohr-87e0df.netlify.app/",
               // institution_id: route.params.id,
-              institution_id: "SANDBOXFINANCE_SFIN0000",
+              institution_id: "SANDBOXFINANCE_SFIN0000", // test bank
             },
             {
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${nordigenToken}`,
               },
             }
           )
           .then((res) => {
+            console.log(res.data.id);
             setAgreementId(res.data.id);
             let result = WebBrowser.openBrowserAsync(
               res.data.link

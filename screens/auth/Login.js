@@ -10,12 +10,71 @@ import {
   Button,
   Text,
 } from "native-base";
-import React from "react";
+import { useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import PiggyBank from "../../assets/img/icon_piggy_bank.svg";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../features/user";
+import { setAuthToken } from "../../features/auth";
+import { setNordigenToken } from "../../features/auth";
+import { getUserAccount } from "../../features/user";
+import { SECRET_ID, SECRET_KEY } from "@env";
 
 const Login = ({ navigation }) => {
+  const dispatch = useDispatch();
+
+  const [email, setEmail] = useState("");
+  const [passcode, setPasscode] = useState("");
+
+  const loginUser = () => {
+    axios
+      .post("http://localhost:8000/users/login", {
+        email: email,
+        passcode: passcode,
+      })
+      .then((res) => {
+        dispatch(setAuthToken({ authToken: res.data.auth_token }));
+
+        dispatch(
+          setUser({ name: res.data.info.name, email: email, number: "" })
+        );
+
+        // check if user has existing account(s)
+        axios
+          .get("http://localhost:8000/accounts/", {
+            headers: {
+              Authorization: `Bearer ${res.data.auth_token}`,
+            },
+          })
+          .then((res) => {
+            if (res.data.accounts.length > 0) {
+              dispatch(getUserAccount({ accountID: "12345 test" }));
+              navigation.navigate("TabScreens");
+            } else {
+              // no existing accounts
+              // create a nordigen access token
+              // navigate to banks list screen
+              axios
+                .post("https://ob.nordigen.com/api/v2/token/new/", {
+                  secret_id: SECRET_ID,
+                  secret_key: SECRET_KEY,
+                })
+                .then((res) => {
+                  dispatch(
+                    setNordigenToken({ nordigenToken: res.data.access })
+                  );
+                  navigation.navigate("BanksList");
+                })
+                .catch((err) => console.log(err));
+            }
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <SafeAreaProvider>
       <KeyboardAwareScrollView>
@@ -46,6 +105,7 @@ const Login = ({ navigation }) => {
                     placeholder="test@test.com"
                     size="2xl"
                     variant="filled"
+                    onChangeText={(newText) => setEmail(newText)}
                   />
                   <FormControl.ErrorMessage
                     leftIcon={<WarningOutlineIcon size="xs" />}
@@ -55,7 +115,12 @@ const Login = ({ navigation }) => {
                 </FormControl>
                 <FormControl isRequired>
                   <FormControl.Label>Passcode</FormControl.Label>
-                  <Input type="password" size="2xl" variant="filled" />
+                  <Input
+                    type="password"
+                    size="2xl"
+                    variant="filled"
+                    onChangeText={(newText) => setPasscode(newText)}
+                  />
                   <FormControl.HelperText alignSelf="flex-end">
                     <Link href="#" isUnderlined={false}>
                       Forgot Passcode?
@@ -67,7 +132,13 @@ const Login = ({ navigation }) => {
                     Atleast 6 characters are required.
                   </FormControl.ErrorMessage>
                 </FormControl>
-                <Button size="lg" mb="4" bg="blue.500" py="3">
+                <Button
+                  size="lg"
+                  mb="4"
+                  bg="blue.500"
+                  py="3"
+                  onPress={loginUser}
+                >
                   Sign In
                 </Button>
                 <Text alignSelf="center">
