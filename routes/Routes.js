@@ -10,6 +10,8 @@ import UserIndex from "../screens/user/Index";
 import TransactionsIndex from "../screens/transactions/Index";
 import ListAccounts from "../screens/auth/ListAccounts";
 import SavingsIndex from "../screens/savings/Index";
+import SavingsCreate from "../screens/savings/Create";
+import SavingsShow from "../screens/savings/Show";
 import BillsIndex from "../screens/bills/Index";
 import AddItemIndex from "../screens/AddItemIndex";
 
@@ -142,6 +144,8 @@ const Routes = () => {
           component={ListAccounts}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="SavingsCreate" component={SavingsCreate} />
+        <Stack.Screen name="SavingsShow" component={SavingsShow} />
       </Stack.Navigator>
     </>
   );
