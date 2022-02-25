@@ -1,13 +1,37 @@
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import axios from "axios";
 import { Box, Center, Flex, Progress, Text } from "native-base";
+import { useEffect, useState } from "react";
 import { Pressable, SafeAreaView, TouchableOpacity } from "react-native";
+import { useSelector } from "react-redux";
 
 const Index = ({ navigation }) => {
-  const testarray = [1, 2, 3];
+  // const testarray = [1, 2, 3];
+  const [savingsList, setSavingsList] = useState([]);
+  const authToken = useSelector((state) => state.auth.authToken);
+
+  useEffect(() => {
+    getSavings();
+  }, []);
+
+  const getSavings = () => {
+    console.log("gettitng savings");
+    axios
+      .get("http://localhost:8000/savings/", {
+        headers: {
+          Authorization: `Bearer ${authToken.authToken}`,
+        },
+      })
+      .then((res) => {
+        setSavingsList(res.data.savings);
+        console.log(res.data.savings);
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
-    <Box bg="dark.100" h={32}>
-      <SafeAreaView>
+    <SafeAreaView>
+      <Box bg="dark.100" h={32}>
         {/* Header */}
         <Box
           mx="6"
@@ -56,46 +80,49 @@ const Index = ({ navigation }) => {
 
         <Box m="8">
           <Flex direction="row" flexWrap="wrap" justify="space-between">
-            {testarray.map((item, index) => (
-              <Box
-                bg="rgba(195, 234, 255, 0.5)"
-                borderColor="coolGray.200"
-                borderWidth={1}
-                p="4"
-                w="48%"
-                mb={4}
-                rounded="md"
-                key={index}
-              >
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("SavingsShow")}
+            {savingsList &&
+              savingsList.map((saving, index) => (
+                <Box
+                  bg="rgba(195, 234, 255, 0.5)"
+                  borderColor="coolGray.200"
+                  borderWidth={1}
+                  p="4"
+                  w="48%"
+                  mb={4}
+                  rounded="md"
+                  key={index}
                 >
-                  <Flex
-                    direction="row"
-                    justify="space-between"
-                    alignItems="center"
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("SavingsShow")}
                   >
-                    <FontAwesome name="plane" size={36} color="#4584FF" />
-                    <Box
-                      borderWidth={1}
-                      rounded="full"
-                      w="50"
-                      h="50"
-                      justifyContent="center"
+                    <Flex
+                      direction="row"
+                      justify="space-between"
                       alignItems="center"
                     >
-                      <Text fontSize={13} fontWeight="500">
-                        50%
-                      </Text>
-                    </Box>
-                  </Flex>
-                  <Text fontWeight={600} fontSize="14" mt="3" mb="2">
-                    Savings For Holidays
-                  </Text>
-                  <Text fontSize={12}>€1,127.00</Text>
-                </TouchableOpacity>
-              </Box>
-            ))}
+                      <FontAwesome name="plane" size={36} color="#4584FF" />
+                      <Box
+                        borderWidth={1}
+                        rounded="full"
+                        w="50"
+                        h="50"
+                        justifyContent="center"
+                        alignItems="center"
+                      >
+                        <Text fontSize={13} fontWeight="500">
+                          50%
+                        </Text>
+                      </Box>
+                    </Flex>
+                    <Text fontWeight={600} fontSize="14" mt="3" mb="2">
+                      {saving.name}
+                    </Text>
+                    <Text fontSize={12}>€{saving.amount}.00</Text>
+                  </TouchableOpacity>
+                </Box>
+              ))}
+            {!savingsList.length ? <Text>No savings found</Text> : <></>}
+
             {/* Add button */}
             <Box alignSelf="center" alignItems="center" w="48%">
               <Pressable onPress={() => navigation.navigate("SavingsCreate")}>
@@ -119,8 +146,8 @@ const Index = ({ navigation }) => {
             </Box>
           </Flex>
         </Box>
-      </SafeAreaView>
-    </Box>
+      </Box>
+    </SafeAreaView>
   );
 };
 

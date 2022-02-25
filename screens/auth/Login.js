@@ -29,6 +29,17 @@ const Login = ({ navigation }) => {
   const [passcode, setPasscode] = useState("");
 
   const loginUser = () => {
+    // create a nordigen access token
+    axios
+      .post("https://ob.nordigen.com/api/v2/token/new/", {
+        secret_id: SECRET_ID,
+        secret_key: SECRET_KEY,
+      })
+      .then((res) => {
+        dispatch(setNordigenToken({ nordigenToken: res.data.access }));
+      })
+      .catch((err) => console.log(err));
+
     axios
       .post("http://localhost:8000/users/login", {
         email: email,
@@ -50,24 +61,14 @@ const Login = ({ navigation }) => {
           })
           .then((res) => {
             if (res.data.accounts.length > 0) {
-              dispatch(getUserAccount({ accountID: "12345 test" }));
+              dispatch(
+                getUserAccount({ accountID: res.data.accounts[0].account_id })
+              );
               navigation.navigate("TabScreens");
             } else {
               // no existing accounts
-              // create a nordigen access token
               // navigate to banks list screen
-              axios
-                .post("https://ob.nordigen.com/api/v2/token/new/", {
-                  secret_id: SECRET_ID,
-                  secret_key: SECRET_KEY,
-                })
-                .then((res) => {
-                  dispatch(
-                    setNordigenToken({ nordigenToken: res.data.access })
-                  );
-                  navigation.navigate("BanksList");
-                })
-                .catch((err) => console.log(err));
+              navigation.navigate("BanksList");
             }
           })
           .catch((err) => console.log(err));

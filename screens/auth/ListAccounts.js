@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Text,
   Box,
@@ -11,9 +11,15 @@ import {
   Center,
   Skeleton,
   VStack,
+  Flex,
+  View,
 } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
+import { getUserAccount } from "../../features/user";
 
 const ListAccounts = ({ navigation, route }) => {
+  const dispatch = useDispatch();
+
   const [account, setAccount] = useState({});
   const { nordigenToken } = useSelector((state) => state.auth.nordigenToken);
   const { authToken } = useSelector((state) => state.auth.authToken);
@@ -49,6 +55,8 @@ const ListAccounts = ({ navigation, route }) => {
         }
       )
       .then((res) => {
+        dispatch(getUserAccount({ accountID: route.params.accounts[0] }));
+
         // navigate to home screen with the account ID passed
         navigation.navigate("TabScreens", {
           accountID: res.data.accounts[0].account_id,
@@ -74,17 +82,23 @@ const ListAccounts = ({ navigation, route }) => {
             rounded="xl"
             px="6"
             py="4"
+            bg="white"
           >
-            <Text
-              color="coolGray.500"
-              fontWeight={500}
-              textTransform="uppercase"
-            >
-              {account.name}
-            </Text>
-            <Text fontSize="xl" fontWeight={600}>
-              {account.ownerName}
-            </Text>
+            <Flex direction="row" alignItems="center" justify="space-between">
+              <View>
+                <Text
+                  color="coolGray.500"
+                  fontWeight={500}
+                  textTransform="uppercase"
+                >
+                  {account.name}
+                </Text>
+                <Text fontSize="xl" fontWeight={600}>
+                  {account.ownerName}
+                </Text>
+              </View>
+              <Ionicons name="enter-outline" size={24} />
+            </Flex>
             <Text mt="3">Currency: {account.currency}</Text>
             <Text>Product: {account.product}</Text>
           </Box>

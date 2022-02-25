@@ -68,9 +68,15 @@ const Routes = () => {
         name="SavingsIndex"
         component={SavingsIndex}
         options={{
-          tabBarLabel: "Savings",
-          tabBarLabelStyle: { fontSize: 13 },
-          headerShown: false,
+          headerTitle: "",
+          headerStyle: {
+            height: 47,
+            backgroundColor: "#27272a",
+            shadowColor: "transparent",
+          },
+          headerTitleStyle: {
+            color: "#fff",
+          },
         }}
       />
       <Tab.Screen
@@ -106,15 +112,15 @@ const Routes = () => {
     <>
       <Stack.Navigator>
         <Stack.Screen
-          name="TabScreens"
-          component={TabScreens}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
           options={{ headerShown: false }}
           name="Welcome"
           component={Welcome}
           // options={{ title: "Welcome" }}
+        />
+        <Stack.Screen
+          name="TabScreens"
+          component={TabScreens}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           // options={{ headerShown: false }}
@@ -137,7 +143,7 @@ const Routes = () => {
         <Stack.Screen
           name="UserAgreement"
           component={UserAgreement}
-          options={{ headerShown: false }}
+          options={{ title: "User Agreement" }}
         />
         <Stack.Screen
           name="ListAccounts"

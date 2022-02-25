@@ -19,7 +19,7 @@ const Index = () => {
         `https://ob.nordigen.com/api/v2/accounts/1048f194-cb13-4cee-a55c-5ef6d8661341/transactions/`,
         {
           headers: {
-            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ1Mjc1NzU5LCJqdGkiOiI2ZGViY2YzMzdiMzI0OGYxOGJmZTIyYjY1YjIxMTg2ZSIsImlkIjo3MDA3LCJzZWNyZXRfaWQiOiI0YmQ1MDQwNy0yODkzLTQ1Y2MtYWE2Ny1lNWNjYTAyZmIwZGIiLCJhbGxvd2VkX2NpZHJzIjpbIjAuMC4wLjAvMCIsIjo6LzAiXX0.gIy33OIWw7ytffJqLu3QqmyRX0BldHpZ-qFeI-YZ3oo`,
+            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ1Nzk4NjU2LCJqdGkiOiIwYWZjMzRlN2JlYWQ0NTU2YjgxMWYyMjRkMjYxOGI2ZCIsImlkIjo3MDA3LCJzZWNyZXRfaWQiOiI0YmQ1MDQwNy0yODkzLTQ1Y2MtYWE2Ny1lNWNjYTAyZmIwZGIiLCJhbGxvd2VkX2NpZHJzIjpbIjAuMC4wLjAvMCIsIjo6LzAiXX0.2YWWosryeFXuXOQRRDiRdp5oEa5_MxMPxI7IQf-BTAs`,
           },
         }
       )
