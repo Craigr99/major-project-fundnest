@@ -19,44 +19,62 @@ import { SECRET_ID, SECRET_KEY } from "@env";
 import { setAuthToken, setNordigenToken } from "../../features/auth";
 import { setUser } from "../../features/user";
 import axios from "axios";
+import { useForm, Controller } from "react-hook-form";
 
 const Register = ({ navigation }) => {
   const dispatch = useDispatch();
+  const [responseErrors, setResponseErrors] = useState(null);
 
-  const [name, setName] = useState("Craig Redmond");
-  const [number, setNumber] = useState("0851263372");
-  const [email, setEmail] = useState("");
-  const [passcode, setPasscode] = useState("123456");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      number: "",
+      email: "",
+      passcode: "",
+    },
+  });
 
-  const register = () => {
+  const register = (data) => {
     // store user in database
     axios
       .post("http://localhost:8000/users/register", {
-        name: name,
-        email: email,
-        passcode: passcode,
-        number: number,
+        name: data.name,
+        email: data.email,
+        passcode: data.passcode,
+        number: data.number,
       })
       .then((res) => {
         console.log(res.data);
         dispatch(setAuthToken({ authToken: res.data.auth_token }));
-        dispatch(setUser({ name: name, email: email, number: number }));
-      })
-      .catch((err) => console.log(err));
+        dispatch(
+          setUser({ name: data.name, email: data.email, number: data.number })
+        );
 
-    // create a nordigen access token
-    // navigate to banks list screen
-    axios
-      .post("https://ob.nordigen.com/api/v2/token/new/", {
-        secret_id: SECRET_ID,
-        secret_key: SECRET_KEY,
+        // // create a nordigen access token
+        // // navigate to banks list screen
+        axios
+          .post("https://ob.nordigen.com/api/v2/token/new/", {
+            secret_id: SECRET_ID,
+            secret_key: SECRET_KEY,
+          })
+          .then((res) => {
+            dispatch(setNordigenToken({ nordigenToken: res.data.access }));
+            console.log(res.data.access);
+            navigation.navigate("BanksList");
+          })
+          .catch((err) => console.log(err));
       })
-      .then((res) => {
-        dispatch(setNordigenToken({ nordigenToken: res.data.access }));
-        console.log(res.data.access);
-        navigation.navigate("BanksList");
-      })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        if (err) {
+          setResponseErrors(
+            "Error - User with this email already exists in the database."
+          );
+        }
+      });
   };
 
   return (
@@ -75,63 +93,180 @@ const Register = ({ navigation }) => {
           <Box>
             <Box>
               <Stack space={4}>
-                <FormControl isRequired>
-                  <FormControl.Label>Full Name</FormControl.Label>
-                  <Input
+                <FormControl isInvalid={errors.name}>
+                  <Controller
+                    control={control}
+                    rules={{
+                      required: true,
+                      minLength: 3,
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <>
+                        <FormControl.Label>Full Name</FormControl.Label>
+                        <Input
+                          name="name"
+                          type="text"
+                          size="2xl"
+                          variant="filled"
+                          onChangeText={onChange}
+                          onBlur={onBlur}
+                          value={value}
+                        />
+                      </>
+                    )}
                     name="name"
-                    type="text"
-                    size="2xl"
-                    variant="filled"
-                    onChangeText={(newText) => setName(newText)}
                   />
-
-                  <FormControl.ErrorMessage
-                    leftIcon={<WarningOutlineIcon size="xs" />}
-                  >
-                    Atleast 6 characters are required.
-                  </FormControl.ErrorMessage>
+                  {errors.name && (
+                    <FormControl.ErrorMessage
+                      leftIcon={<WarningOutlineIcon size="xs" />}
+                    >
+                      This field is required.
+                    </FormControl.ErrorMessage>
+                  )}
+                  {errors.name?.type === "minLength" && (
+                    <FormControl.ErrorMessage
+                      leftIcon={<WarningOutlineIcon size="xs" />}
+                    >
+                      Name must be at least 3 characters long.
+                    </FormControl.ErrorMessage>
+                  )}
                 </FormControl>
-                <FormControl isRequired>
-                  <FormControl.Label>Phone Number</FormControl.Label>
-                  <Input
-                    type="number"
-                    size="2xl"
-                    variant="filled"
-                    onChangeText={(newText) => setNumber(newText)}
+                <FormControl isInvalid={errors.number}>
+                  <Controller
+                    control={control}
+                    rules={{
+                      required: true,
+                      minLength: 3,
+                      pattern: /^[0-9]+$/,
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <>
+                        <FormControl.Label>Phone Number</FormControl.Label>
+                        <Input
+                          name="number"
+                          type="number"
+                          size="2xl"
+                          variant="filled"
+                          onChangeText={onChange}
+                          onBlur={onBlur}
+                          value={value}
+                        />
+                      </>
+                    )}
+                    name="number"
                   />
-                  <FormControl.ErrorMessage
-                    leftIcon={<WarningOutlineIcon size="xs" />}
-                  >
-                    Atleast 6 characters are required.
-                  </FormControl.ErrorMessage>
+                  {errors.number && (
+                    <FormControl.ErrorMessage
+                      leftIcon={<WarningOutlineIcon size="xs" />}
+                    >
+                      This field is required.
+                    </FormControl.ErrorMessage>
+                  )}
+                  {errors.number?.type === "minLength" && (
+                    <FormControl.ErrorMessage
+                      leftIcon={<WarningOutlineIcon size="xs" />}
+                    >
+                      Phone must be at least 3 characters long.
+                    </FormControl.ErrorMessage>
+                  )}
+                  {errors.number?.type === "pattern" && (
+                    <FormControl.ErrorMessage
+                      leftIcon={<WarningOutlineIcon size="xs" />}
+                    >
+                      This field must contain numbers only
+                    </FormControl.ErrorMessage>
+                  )}
                 </FormControl>
-                <FormControl isRequired>
-                  <FormControl.Label>Email Address</FormControl.Label>
-                  <Input
-                    type="text"
-                    size="2xl"
-                    variant="filled"
-                    onChangeText={(newText) => setEmail(newText)}
+                <FormControl isInvalid={errors.email || responseErrors}>
+                  <Controller
+                    control={control}
+                    rules={{
+                      required: true,
+                      minLength: 3,
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <>
+                        <FormControl.Label>Email Address</FormControl.Label>
+                        <Input
+                          name="email"
+                          type="email"
+                          size="2xl"
+                          variant="filled"
+                          onChangeText={onChange}
+                          onBlur={onBlur}
+                          value={value}
+                        />
+                      </>
+                    )}
+                    name="email"
                   />
-                  <FormControl.ErrorMessage
-                    leftIcon={<WarningOutlineIcon size="xs" />}
-                  >
-                    Atleast 6 characters are required.
-                  </FormControl.ErrorMessage>
+                  {errors.email && (
+                    <FormControl.ErrorMessage
+                      leftIcon={<WarningOutlineIcon size="xs" />}
+                    >
+                      This field is required.
+                    </FormControl.ErrorMessage>
+                  )}
+                  {errors.email?.type === "minLength" && (
+                    <FormControl.ErrorMessage
+                      leftIcon={<WarningOutlineIcon size="xs" />}
+                    >
+                      Email must be at least 3 characters long.
+                    </FormControl.ErrorMessage>
+                  )}
+                  {responseErrors && (
+                    <FormControl.ErrorMessage
+                      leftIcon={<WarningOutlineIcon size="xs" />}
+                    >
+                      User already exists with this email.
+                    </FormControl.ErrorMessage>
+                  )}
                 </FormControl>
-                <FormControl isRequired>
-                  <FormControl.Label>Passcode</FormControl.Label>
-                  <Input
-                    type="password"
-                    size="2xl"
-                    variant="filled"
-                    onChangeText={(newText) => setPasscode(newText)}
+                <FormControl isInvalid={errors.passcode}>
+                  <Controller
+                    control={control}
+                    rules={{
+                      required: true,
+                      minLength: 5,
+                      pattern: /^[0-9]+$/,
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <>
+                        <FormControl.Label>Passcode</FormControl.Label>
+                        <Input
+                          name="passcode"
+                          type="password"
+                          size="2xl"
+                          variant="filled"
+                          onChangeText={onChange}
+                          onBlur={onBlur}
+                          value={value}
+                        />
+                      </>
+                    )}
+                    name="passcode"
                   />
-                  <FormControl.ErrorMessage
-                    leftIcon={<WarningOutlineIcon size="xs" />}
-                  >
-                    Atleast 6 characters are required.
-                  </FormControl.ErrorMessage>
+                  {errors.passcode && (
+                    <FormControl.ErrorMessage
+                      leftIcon={<WarningOutlineIcon size="xs" />}
+                    >
+                      This field is required.
+                    </FormControl.ErrorMessage>
+                  )}
+                  {errors.passcode?.type === "minLength" && (
+                    <FormControl.ErrorMessage
+                      leftIcon={<WarningOutlineIcon size="xs" />}
+                    >
+                      Passcode must be at least 5 characters long.
+                    </FormControl.ErrorMessage>
+                  )}
+                  {errors.passcode?.type === "pattern" && (
+                    <FormControl.ErrorMessage
+                      leftIcon={<WarningOutlineIcon size="xs" />}
+                    >
+                      This field must contain numbers only
+                    </FormControl.ErrorMessage>
+                  )}
                 </FormControl>
                 <Button
                   size="lg"
@@ -139,7 +274,7 @@ const Register = ({ navigation }) => {
                   mt="6"
                   bg="blue.500"
                   py="3"
-                  onPress={register}
+                  onPress={handleSubmit(register)}
                 >
                   Sign Up
                 </Button>
