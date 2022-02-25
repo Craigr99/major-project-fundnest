@@ -4,9 +4,14 @@ import { Box, Flex, ScrollView, Text } from "native-base";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native";
 import moment from "moment";
+import { useSelector } from "react-redux";
 
 const Index = () => {
   const [accountTransactions, setAccountTransactions] = useState([]);
+  const userAccountID = useSelector((state) => state.user.accountID.accountID);
+  const nordigenToken = useSelector(
+    (state) => state.auth.nordigenToken.nordigenToken
+  );
 
   useEffect(() => {
     // get account transactions
@@ -16,10 +21,10 @@ const Index = () => {
   const getTransactions = () => {
     axios
       .get(
-        `https://ob.nordigen.com/api/v2/accounts/1048f194-cb13-4cee-a55c-5ef6d8661341/transactions/`,
+        `https://ob.nordigen.com/api/v2/accounts/${userAccountID}/transactions/`,
         {
           headers: {
-            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ1Nzk4NjU2LCJqdGkiOiIwYWZjMzRlN2JlYWQ0NTU2YjgxMWYyMjRkMjYxOGI2ZCIsImlkIjo3MDA3LCJzZWNyZXRfaWQiOiI0YmQ1MDQwNy0yODkzLTQ1Y2MtYWE2Ny1lNWNjYTAyZmIwZGIiLCJhbGxvd2VkX2NpZHJzIjpbIjAuMC4wLjAvMCIsIjo6LzAiXX0.2YWWosryeFXuXOQRRDiRdp5oEa5_MxMPxI7IQf-BTAs`,
+            Authorization: `Bearer ${nordigenToken}`,
           },
         }
       )
@@ -54,9 +59,13 @@ const Index = () => {
     <SafeAreaView>
       {/* Transactions */}
       <Box mx="7" mt="8">
-        <Text fontSize="2xl" mb="5">
-          Transactions
-        </Text>
+        <Flex direction="row" justify="space-between">
+          <Ionicons name="search-outline" size={32} />
+          <Text fontSize="2xl" mb="5">
+            Transactions
+          </Text>
+          <Ionicons name="person-outline" size={32} />
+        </Flex>
         <ScrollView showsVerticalScrollIndicator={false}>
           {accountTransactions ? (
             accountTransactions.map((transaction, index) => {

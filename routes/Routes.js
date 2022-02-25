@@ -68,6 +68,7 @@ const Routes = () => {
         name="SavingsIndex"
         component={SavingsIndex}
         options={{
+          tabBarLabel: "Savings",
           headerTitle: "",
           headerStyle: {
             height: 47,
@@ -135,11 +136,7 @@ const Routes = () => {
           options={{ title: "Sign In" }}
         />
 
-        <Stack.Screen
-          name="BanksList"
-          component={BanksList}
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="BanksList" component={BanksList} />
         <Stack.Screen
           name="UserAgreement"
           component={UserAgreement}
