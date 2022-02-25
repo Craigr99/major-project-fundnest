@@ -17,7 +17,7 @@ import {
   Pressable,
   Spinner,
 } from "native-base";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native";
 import { useSelector } from "react-redux";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
@@ -25,45 +25,34 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 const Index = ({ navigation, route }) => {
   const testarray = [1, 2, 3];
   // State
+  const userAccountID = useSelector((state) => state.user.accountID.accountID);
   const user = useSelector((state) => state.user.value);
-  const userAccountID = useSelector((state) => state.user.accountID);
-  const nordigenToken = useSelector((state) => state.auth.nordigenToken);
+  const nordigenToken = useSelector(
+    (state) => state.auth.nordigenToken.nordigenToken
+  );
   const authToken = useSelector((state) => state.auth.authToken);
   const [accountBalance, setAccountBalance] = useState("");
-
-  // console.log("id", userAccountID.accountID);
-
   // get account balance
-  useState(() => {
+  useEffect(() => {
+    getAccountBalance();
+  }, []);
+
+  const getAccountBalance = () => {
     axios
       .get(
-        `https://ob.nordigen.com/api/v2/accounts/1048f194-cb13-4cee-a55c-5ef6d8661341/balances/`,
+        `https://ob.nordigen.com/api/v2/accounts/${userAccountID}/balances/`,
         {
           headers: {
-            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ1Mjc1NzU5LCJqdGkiOiI2ZGViY2YzMzdiMzI0OGYxOGJmZTIyYjY1YjIxMTg2ZSIsImlkIjo3MDA3LCJzZWNyZXRfaWQiOiI0YmQ1MDQwNy0yODkzLTQ1Y2MtYWE2Ny1lNWNjYTAyZmIwZGIiLCJhbGxvd2VkX2NpZHJzIjpbIjAuMC4wLjAvMCIsIjo6LzAiXX0.gIy33OIWw7ytffJqLu3QqmyRX0BldHpZ-qFeI-YZ3oo`,
+            Authorization: `Bearer ${nordigenToken}`,
           },
         }
       )
       .then((res) => {
+        console.log(res.data.balances[0]);
         setAccountBalance(res.data.balances[0]);
       })
       .catch((err) => console.log(err));
-
-    //   axios
-    //     .get(
-    //       `https://ob.nordigen.com/api/v2/accounts/${route.params.accountID}/balances/`,
-    //       {
-    //         headers: {
-    //           Authorization: `Bearer ${nordigenToken.nordigenToken}`,
-    //         },
-    //       }
-    //     )
-    //     .then((res) => {
-    //       console.log(res.data.balances[0]);
-    //       setAccountBalance(res.data.balances[0]);
-    //     })
-    //     .catch((err) => console.log(err));
-  });
+  };
 
   const logoutUser = () => {
     axios
@@ -194,7 +183,7 @@ const Index = ({ navigation, route }) => {
             ))}
             {/* Add button */}
             <Box alignSelf="center" alignItems="center" w="48%">
-              <Pressable onPress={() => console.log("press")}>
+              <Pressable onPress={() => navigation.navigate("SavingsCreate")}>
                 <Box
                   bg="white"
                   w="68"

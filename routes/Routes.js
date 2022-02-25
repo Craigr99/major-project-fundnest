@@ -10,6 +10,8 @@ import UserIndex from "../screens/user/Index";
 import TransactionsIndex from "../screens/transactions/Index";
 import ListAccounts from "../screens/auth/ListAccounts";
 import SavingsIndex from "../screens/savings/Index";
+import SavingsCreate from "../screens/savings/Create";
+import SavingsShow from "../screens/savings/Show";
 import BillsIndex from "../screens/bills/Index";
 import AddItemIndex from "../screens/AddItemIndex";
 
@@ -66,9 +68,15 @@ const Routes = () => {
         name="SavingsIndex"
         component={SavingsIndex}
         options={{
-          tabBarLabel: "Savings",
-          tabBarLabelStyle: { fontSize: 13 },
-          headerShown: false,
+          headerTitle: "",
+          headerStyle: {
+            height: 47,
+            backgroundColor: "#27272a",
+            shadowColor: "transparent",
+          },
+          headerTitleStyle: {
+            color: "#fff",
+          },
         }}
       />
       <Tab.Screen
@@ -104,15 +112,15 @@ const Routes = () => {
     <>
       <Stack.Navigator>
         <Stack.Screen
-          name="TabScreens"
-          component={TabScreens}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
           options={{ headerShown: false }}
           name="Welcome"
           component={Welcome}
           // options={{ title: "Welcome" }}
+        />
+        <Stack.Screen
+          name="TabScreens"
+          component={TabScreens}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           // options={{ headerShown: false }}
@@ -135,13 +143,15 @@ const Routes = () => {
         <Stack.Screen
           name="UserAgreement"
           component={UserAgreement}
-          options={{ headerShown: false }}
+          options={{ title: "User Agreement" }}
         />
         <Stack.Screen
           name="ListAccounts"
           component={ListAccounts}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="SavingsCreate" component={SavingsCreate} />
+        <Stack.Screen name="SavingsShow" component={SavingsShow} />
       </Stack.Navigator>
     </>
   );

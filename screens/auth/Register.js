@@ -26,7 +26,7 @@ const Register = ({ navigation }) => {
   const [name, setName] = useState("Craig Redmond");
   const [number, setNumber] = useState("0851263372");
   const [email, setEmail] = useState("");
-  const [passcode, setPasscode] = useState("132123123");
+  const [passcode, setPasscode] = useState("123456");
 
   const register = () => {
     // store user in database
