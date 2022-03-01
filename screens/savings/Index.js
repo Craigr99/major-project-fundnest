@@ -2,12 +2,24 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { Box, Center, Flex, Progress, Text } from "native-base";
 import { useEffect, useState } from "react";
-import { Pressable, SafeAreaView, TouchableOpacity } from "react-native";
+import {
+  Pressable,
+  SafeAreaView,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  StatusBar,
+} from "react-native";
 import { useSelector } from "react-redux";
+import ProgressCircle from "react-native-progress-circle";
 
 const Index = ({ navigation }) => {
-  // const testarray = [1, 2, 3];
   const [savingsList, setSavingsList] = useState([]);
+  const [initialSavingsGoal, setInitialSavingsGoal] = useState("");
+  const [totalSavingsGoal, setTotalSavingsGoal] = useState("");
+  const [initialSavingsTotal, setInitialSavingsTotal] = useState("");
+  const [currentSavingsTotal, setCurrentSavingsTotal] = useState("");
+  const [savingsStatus, setSavingsStatus] = useState("");
   const authToken = useSelector((state) => state.auth.authToken);
 
   useEffect(() => {
@@ -24,9 +36,41 @@ const Index = ({ navigation }) => {
       })
       .then((res) => {
         setSavingsList(res.data.savings);
-        console.log(res.data.savings);
+        getTotalSavingGoal(savingsList);
+        getCurrentSavingsTotal(savingsList);
+        setSavingsStatus(
+          getPercentage(initialSavingsTotal, initialSavingsGoal)
+        );
+        console.log(savingsList);
       })
       .catch((err) => console.log(err));
+  };
+
+  const getTotalSavingGoal = (array) => {
+    let sum = 0;
+    for (var i = 0; i < array.length; i++) sum += parseInt(array[i].amount);
+    console.log(sum);
+    setInitialSavingsGoal(sum);
+    setTotalSavingsGoal(currencyFormatter(sum));
+  };
+
+  const getCurrentSavingsTotal = (array) => {
+    let sum = 0;
+    for (var i = 0; i < array.length; i++)
+      sum += parseInt(array[i].current_amount);
+    console.log(sum);
+    setInitialSavingsTotal(sum);
+    setCurrentSavingsTotal(currencyFormatter(sum));
+  };
+
+  const currencyFormatter = (amount) => {
+    if (!amount) return null;
+    // console.log(amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,"));
+    return amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
+  };
+
+  const getPercentage = (partialValue, totalValue) => {
+    return (100 * partialValue) / totalValue;
   };
 
   return (
@@ -46,7 +90,7 @@ const Index = ({ navigation }) => {
           <Ionicons
             name="add-outline"
             color="white"
-            size={32}
+            size={34}
             onPress={() => navigation.navigate("SavingsCreate")}
           />
         </Box>
@@ -64,91 +108,135 @@ const Index = ({ navigation }) => {
             <Text fontSize={12} color="coolGray.700">
               Total Savings Balance
             </Text>
-            <Text fontSize={32} fontWeight="600" my="3">
-              €2,192.00
-            </Text>
+            {currentSavingsTotal ? (
+              <Text fontSize={32} fontWeight="600" my="3">
+                € {currentSavingsTotal || "0"}
+              </Text>
+            ) : (
+              <Text>€ 0</Text>
+            )}
             <Box w="40%" maxW="400">
-              <Progress colorScheme="emerald" value={55} />
+              <Progress colorScheme="emerald" value={savingsStatus || 0} />
             </Box>
-            <Text fontSize={13} fontWeight="500" mt="2">
-              € 2,192.00/ € 11,000.00
-            </Text>
+            {totalSavingsGoal ? (
+              <Text fontSize={13} fontWeight="500" mt="2" mb="3">
+                €{" "}
+                {currentSavingsTotal ? (
+                  <>{currentSavingsTotal}</>
+                ) : (
+                  <Text>€ 0</Text>
+                )}
+                / € {totalSavingsGoal}
+              </Text>
+            ) : (
+              <Text>€ 0/ € 0</Text>
+            )}
           </Flex>
         </Box>
 
         {/* Main body */}
-
-        <Box m="8">
-          <Flex direction="row" flexWrap="wrap" justify="space-between">
-            {savingsList &&
-              savingsList.map((saving, index) => (
-                <Box
-                  bg="rgba(195, 234, 255, 0.5)"
-                  borderColor="coolGray.200"
-                  borderWidth={1}
-                  p="4"
-                  w="48%"
-                  mb={4}
-                  rounded="md"
-                  key={index}
-                >
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("SavingsShow")}
+        <Box m="8" flex={1}>
+          <ScrollView style={{ paddingBottom: 490 }}>
+            <Flex direction="row" flexWrap="wrap" justify="space-between">
+              {savingsList &&
+                savingsList.map((saving, index) => (
+                  <Box
+                    bg={saving.colour}
+                    borderColor="coolGray.200"
+                    borderWidth={1}
+                    p="4"
+                    w="48%"
+                    mb={4}
+                    rounded="md"
+                    key={index}
                   >
-                    <Flex
-                      direction="row"
-                      justify="space-between"
-                      alignItems="center"
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate("SavingsShow")}
                     >
-                      <FontAwesome name="plane" size={36} color="#4584FF" />
-                      <Box
-                        borderWidth={1}
-                        rounded="full"
-                        w="50"
-                        h="50"
-                        justifyContent="center"
+                      <Flex
+                        direction="row"
+                        justify="space-between"
                         alignItems="center"
                       >
-                        <Text fontSize={13} fontWeight="500">
-                          50%
-                        </Text>
-                      </Box>
-                    </Flex>
-                    <Text fontWeight={600} fontSize="14" mt="3" mb="2">
-                      {saving.name}
-                    </Text>
-                    <Text fontSize={12}>€{saving.amount}.00</Text>
-                  </TouchableOpacity>
-                </Box>
-              ))}
-            {!savingsList.length ? <Text>No savings found</Text> : <></>}
+                        <FontAwesome
+                          name="plane"
+                          size={36}
+                          color={saving.icon_color}
+                        />
+                        <Box
+                          borderWidth={1}
+                          rounded="full"
+                          w="50"
+                          h="50"
+                          justifyContent="center"
+                          alignItems="center"
+                        >
+                          <ProgressCircle
+                            percent={Math.floor(
+                              getPercentage(
+                                saving.current_amount,
+                                saving.amount
+                              )
+                            )}
+                            radius={35}
+                            borderWidth={4}
+                            color={saving.icon_color}
+                            bgColor={saving.colour}
+                          >
+                            <Text style={{ fontSize: 14 }}>
+                              {Math.floor(
+                                getPercentage(
+                                  saving.current_amount,
+                                  saving.amount
+                                )
+                              )}
+                              %
+                            </Text>
+                          </ProgressCircle>
+                        </Box>
+                      </Flex>
+                      <Text fontWeight={600} fontSize="14" mt="3" mb="2">
+                        {saving.name}
+                      </Text>
+                      <Text fontSize={12}>€{saving.amount}.00</Text>
+                    </TouchableOpacity>
+                  </Box>
+                ))}
+              {!savingsList.length ? <Text>No savings found</Text> : <></>}
 
-            {/* Add button */}
-            <Box alignSelf="center" alignItems="center" w="48%">
-              <Pressable onPress={() => navigation.navigate("SavingsCreate")}>
-                <Box
-                  bg="blue.500"
-                  w="68"
-                  h="68"
-                  borderWidth="1"
-                  borderColor="coolGray.200"
-                  shadow="1"
-                  rounded="full"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Ionicons name="add" size={32} color="white" />
-                </Box>
-              </Pressable>
-              <Text color="blue.500" fontWeight={600} mt="1">
-                New Saving
-              </Text>
-            </Box>
-          </Flex>
+              {/* Add button */}
+              <Box alignSelf="center" alignItems="center" w="48%">
+                <Pressable onPress={() => navigation.navigate("SavingsCreate")}>
+                  <Box
+                    bg="blue.500"
+                    w="68"
+                    h="68"
+                    borderWidth="1"
+                    borderColor="coolGray.200"
+                    shadow="1"
+                    rounded="full"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Ionicons name="add" size={32} color="white" />
+                  </Box>
+                </Pressable>
+                <Text color="blue.500" fontWeight={600} mt="1">
+                  New Saving
+                </Text>
+              </Box>
+            </Flex>
+          </ScrollView>
         </Box>
       </Box>
     </SafeAreaView>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: StatusBar.currentHeight,
+  },
+});
 export default Index;

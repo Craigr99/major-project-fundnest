@@ -64,6 +64,7 @@ const Routes = () => {
           headerShown: false,
         }}
       />
+
       <Tab.Screen
         name="SavingsIndex"
         component={SavingsIndex}
@@ -103,7 +104,16 @@ const Routes = () => {
         options={{
           tabBarLabel: "Recent",
           tabBarLabelStyle: { fontSize: 13 },
-          headerShown: false,
+          // headerShown: false,
+          headerTitle: "",
+          headerStyle: {
+            height: 47,
+            backgroundColor: "#27272a",
+            shadowColor: "transparent",
+          },
+          headerTitleStyle: {
+            color: "#fff",
+          },
         }}
       />
     </Tab.Navigator>

@@ -1,13 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import { Box, Flex, ScrollView, Text } from "native-base";
-import { useEffect, useState } from "react";
+import { Badge, Box, Flex, ScrollView, Text } from "native-base";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native";
 import moment from "moment";
 import { useSelector } from "react-redux";
 
 const Index = () => {
   const [accountTransactions, setAccountTransactions] = useState([]);
+  const [accountBalance, setAccountBalance] = useState("");
   const userAccountID = useSelector((state) => state.user.accountID.accountID);
   const nordigenToken = useSelector(
     (state) => state.auth.nordigenToken.nordigenToken
@@ -16,6 +17,7 @@ const Index = () => {
   useEffect(() => {
     // get account transactions
     getTransactions();
+    getAccountBalance();
   }, []);
 
   const getTransactions = () => {
@@ -30,7 +32,24 @@ const Index = () => {
       )
       .then((res) => {
         console.log(res.data.transactions.booked.slice(0, 5));
-        setAccountTransactions(res.data.transactions.booked.slice(0, 9));
+        setAccountTransactions(res.data.transactions.booked.slice(0, 14));
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const getAccountBalance = () => {
+    axios
+      .get(
+        `https://ob.nordigen.com/api/v2/accounts/${userAccountID}/balances/`,
+        {
+          headers: {
+            Authorization: `Bearer ${nordigenToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data.balances[0]);
+        setAccountBalance(res.data.balances[0]);
       })
       .catch((err) => console.log(err));
   };
@@ -57,69 +76,112 @@ const Index = () => {
 
   return (
     <SafeAreaView>
-      {/* Transactions */}
-      <Box mx="7" mt="8">
+      <Box bg="dark.100" px="7" pt="8" pb="2">
         <Flex direction="row" justify="space-between">
-          <Ionicons name="search-outline" size={32} />
-          <Text fontSize="2xl" mb="5">
+          <Ionicons name="search-outline" size={32} color="white" />
+          <Text fontSize="2xl" fontWeight={400} mb="5" color="white">
             Transactions
           </Text>
-          <Ionicons name="person-outline" size={32} />
+          <Ionicons name="person-outline" size={32} color="white" />
         </Flex>
+      </Box>
+      <Box bg="white" shadow={2} py="5" alignItems="center">
+        <Text fontWeight={600} fontSize="3xl">
+          €{accountBalance ? accountBalance.balanceAmount.amount : ""}
+        </Text>
+        <Text fontSize="xs" color="coolGray.500" mt="2">
+          Current Balance
+        </Text>
+      </Box>
+      {/* Transactions */}
+
+      <Flex direction="row" mt="5">
+        <Badge
+          colorScheme="info"
+          variant="subtle"
+          alignSelf="flex-start"
+          ml="7"
+        >
+          <Text fontSize="sm" fontWeight={600} color="darkBlue.500">
+            Latest
+          </Text>
+        </Badge>
+        <Badge
+          colorScheme="info"
+          variant="outline"
+          alignSelf="flex-start"
+          ml="3"
+          borderWidth={0}
+        >
+          <Text fontSize="sm" fontWeight={600} color="gray.500">
+            Category
+          </Text>
+        </Badge>
+        <Badge
+          colorScheme="info"
+          variant="outline"
+          alignSelf="flex-start"
+          ml="3"
+          borderWidth={0}
+        >
+          <Text fontSize="sm" fontWeight={600} color="gray.500">
+            Country
+          </Text>
+        </Badge>
+      </Flex>
+
+      <Box mx="7" mt="8">
         <ScrollView showsVerticalScrollIndicator={false}>
           {accountTransactions ? (
             accountTransactions.map((transaction, index) => {
               return (
-                <Flex
-                  direction="row"
-                  justify="space-between"
-                  mb="6"
-                  key={index}
-                >
-                  <Flex direction="row" alignItems="center">
-                    <TransactionIcon
-                      color={
+                <React.Fragment key={index}>
+                  <Flex direction="row" justify="space-between" mb="6">
+                    <Flex direction="row" alignItems="center">
+                      <TransactionIcon
+                        color={
+                          transaction.transactionAmount.amount.includes("-")
+                            ? "red.300"
+                            : "green.300"
+                        }
+                        direction={
+                          transaction.transactionAmount.amount.includes("-")
+                            ? "down"
+                            : "up"
+                        }
+                      />
+                      <Box maxW="2/3">
+                        <Text fontWeight={600}>
+                          {transaction.remittanceInformationUnstructured}
+                        </Text>
+                        <Text>
+                          {moment(transaction.bookingDate).format("D MMM YYYY")}
+                        </Text>
+                      </Box>
+                    </Flex>
+                    {/* if transaction has - then it should be RED */}
+                    <Box
+                      bg={
                         transaction.transactionAmount.amount.includes("-")
-                          ? "red.300"
-                          : "green.300"
+                          ? "transparent"
+                          : "green.200"
                       }
-                      direction={
-                        transaction.transactionAmount.amount.includes("-")
-                          ? "down"
-                          : "up"
-                      }
-                    />
-                    <Box maxW="2/3">
-                      <Text fontWeight={600}>
-                        {transaction.remittanceInformationUnstructured}
-                      </Text>
-                      <Text>
-                        {moment(transaction.bookingDate).format("D MMM YYYY")}
+                      p={0.5}
+                      alignSelf="center"
+                    >
+                      <Text
+                        fontWeight={600}
+                        color={
+                          transaction.transactionAmount.amount.includes("-")
+                            ? "red.600"
+                            : "green.700"
+                        }
+                      >
+                        €{transaction.transactionAmount.amount}
                       </Text>
                     </Box>
                   </Flex>
-                  {/* if transaction has - then it should be RED */}
-                  <Box
-                    bg={
-                      transaction.transactionAmount.amount.includes("-")
-                        ? "transparent"
-                        : "green.200"
-                    }
-                    p={0.5}
-                    alignSelf="center"
-                  >
-                    <Text
-                      fontWeight={600}
-                      color={
-                        transaction.transactionAmount.amount.includes("-")
-                          ? "red.600"
-                          : "green.700"
-                      }
-                    >
-                      €{transaction.transactionAmount.amount}
-                    </Text>
-                  </Box>
-                </Flex>
+                </React.Fragment>
               );
             })
           ) : (
