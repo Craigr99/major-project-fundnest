@@ -3,6 +3,7 @@ import axios from "axios";
 import {
   Box,
   Button,
+  Center,
   CheckIcon,
   Flex,
   FormControl,
@@ -17,12 +18,100 @@ import { useState } from "react";
 import { SafeAreaView } from "react-native";
 import { useSelector } from "react-redux";
 import { CommonActions } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
 const Create = ({ navigation }) => {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [icon, setIcon] = useState("plane");
-  const [colour, setColor] = useState("blue");
+  const [icon, setIcon] = useState("airplane-outline");
+  const [colour, setColor] = useState("blue.200");
+  const [iconColour, setIconColor] = useState("#3b82f6");
+
+  const selectIcons = [
+    {
+      name: "airplane-outline",
+    },
+    {
+      name: "american-football-outline",
+    },
+    {
+      name: "barbell-outline",
+    },
+    {
+      name: "basket-outline",
+    },
+    {
+      name: "beer-outline",
+    },
+    {
+      name: "bonfire-outline",
+    },
+    {
+      name: "car-outline",
+    },
+    {
+      name: "cart-outline",
+    },
+    {
+      name: "earth-outline",
+    },
+  ];
+  const selectColours = [
+    {
+      // blue.100
+      name: "Blue",
+      value: "#dbeafe",
+      iconColor: "#3b82f6",
+    },
+    {
+      // green.100
+      name: "Green",
+      value: "#dcfce7",
+      iconColor: "#22c55e",
+    },
+    {
+      // warning.100
+      name: "Orange",
+      value: "#ffedd5",
+      iconColor: "#f97316",
+    },
+    {
+      // muted.100
+      name: "Gray",
+      value: "#f5f5f5",
+      iconColor: "#262626",
+    },
+    {
+      // rose.100
+      name: "Red",
+      value: "#ffe4e6",
+      iconColor: "#f43f5e",
+    },
+    {
+      // pink.100
+      name: "Pink",
+      value: "#fce7f3",
+      iconColor: "#ec4899",
+    },
+    {
+      // violet.100
+      name: "Purple",
+      value: "#ede9fe",
+      iconColor: "#8b5cf6",
+    },
+    {
+      // cyan.100
+      name: "Cyan",
+      value: "#cffafe",
+      iconColor: "#06b6d4",
+    },
+    {
+      // dark.500
+      name: "Dark",
+      value: "#a1a1aa",
+      iconColor: "#27272a",
+    },
+  ];
 
   const authToken = useSelector((state) => state.auth.authToken);
 
@@ -35,6 +124,7 @@ const Create = ({ navigation }) => {
           amount: amount,
           icon: icon,
           colour: colour,
+          icon_color: iconColour,
         },
         {
           headers: {
@@ -53,6 +143,11 @@ const Create = ({ navigation }) => {
         );
       })
       .catch((err) => console.log(err));
+  };
+  const findColour = (colour) => {
+    const result = selectColours.find(({ value }) => value === colour);
+    setColor(result.value);
+    setIconColor(result.iconColor);
   };
   return (
     <View flex={1} backgroundColor="white">
@@ -102,21 +197,31 @@ const Create = ({ navigation }) => {
                 </FormControl.Label>
                 <Select
                   size="2xl"
-                  defaultValue="i1"
+                  defaultValue="blue"
                   // selectedValue={value}
                   accessibilityLabel="Select Icon"
                   placeholder="Icon"
                   onValueChange={(itemValue) => {
                     setIcon(itemValue);
                   }}
-                  // _selectedItem={{
-                  //   bg: "teal.600",
-                  //   endIcon: <CheckIcon size={5} />,
-                  // }}
                 >
-                  <Select.Item label="Icon1" value="i1" />
-                  <Select.Item label="Icon2" value="i2" />
-                  <Select.Item label="Icon3" value="i3" />
+                  {selectIcons.map((icon, index) => (
+                    <Select.Item
+                      key={index}
+                      label={
+                        <Ionicons
+                          key={index}
+                          name={icon.name}
+                          size={32}
+                          color={iconColour}
+                        />
+                      }
+                      selectedValue={icon.name}
+                      value={icon.name}
+                      my={1}
+                      fontSize="2xl"
+                    />
+                  ))}
                 </Select>
                 <FormControl.ErrorMessage>
                   Something is wrong.
@@ -134,15 +239,20 @@ const Create = ({ navigation }) => {
                   accessibilityLabel="Select Colour"
                   placeholder="Colour"
                   onValueChange={(itemValue) => {
-                    setColor(itemValue);
+                    findColour(itemValue);
                   }}
-                  // _selectedItem={{
-                  //   bg: "teal.600",
-                  //   endIcon: <CheckIcon size={5} />,
-                  // }}
                 >
-                  <Select.Item label="Blue" value="blue" />
-                  <Select.Item label="Colour1" value="color1" />
+                  {selectColours.map((colour, index) => (
+                    <Select.Item
+                      key={index}
+                      label={colour.name}
+                      selectedValue={colour}
+                      value={colour.value}
+                      bg={colour.value}
+                      my={1}
+                      fontSize="2xl"
+                    />
+                  ))}
                 </Select>
                 <FormControl.ErrorMessage>
                   Something is wrong.

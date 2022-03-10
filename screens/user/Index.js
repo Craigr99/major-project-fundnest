@@ -16,6 +16,8 @@ import {
   FlatList,
   Pressable,
   Spinner,
+  Modal,
+  CloseIcon,
 } from "native-base";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native";
@@ -32,6 +34,7 @@ const Index = ({ navigation, route }) => {
   );
   const authToken = useSelector((state) => state.auth.authToken);
   const [accountBalance, setAccountBalance] = useState("");
+  const [showModal, setShowModal] = useState(false);
   // get account balance
   useEffect(() => {
     getAccountBalance();
@@ -72,6 +75,45 @@ const Index = ({ navigation, route }) => {
       .catch((err) => console.log(err));
   };
 
+  const OptionsModal = () => {
+    return (
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <Modal.Content maxWidth="400px">
+          <Modal.CloseButton />
+          <Modal.Header>Go To</Modal.Header>
+          <Modal.Body>
+            <Flex direction="row" alignItems="center">
+              <Ionicons name="person" size={22} color="#3b82f6" />
+              <Text
+                fontSize="md"
+                ml={3}
+                onPress={() => {
+                  setShowModal(false);
+                  navigation.navigate("ProfileIndex");
+                }}
+              >
+                Profile
+              </Text>
+            </Flex>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button
+                variant="ghost"
+                colorScheme="blueGray"
+                onPress={() => {
+                  setShowModal(false);
+                }}
+              >
+                Cancel
+              </Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+    );
+  };
+
   return (
     <View bg="dark.100" h="1/2" w="full" borderBottomRadius="36">
       <SafeAreaView>
@@ -96,12 +138,23 @@ const Index = ({ navigation, route }) => {
               </Text>
             </Flex>
 
-            <HamburgerIcon
-              size={5}
-              color="amber.400"
+            {/* Modal */}
+            <Button
+              mt={1}
+              variant="unstyled"
               ml="auto"
               alignSelf="flex-start"
-            />
+              onPress={() => {
+                console.log("press");
+                setShowModal(true);
+              }}
+            >
+              {showModal ? (
+                <CloseIcon size={5} color="amber.400" />
+              ) : (
+                <HamburgerIcon size={5} color="amber.400" />
+              )}
+            </Button>
           </Flex>
         </Box>
         {/* <Button size="lg" mb="4" bg="blue.500" py="3" onPress={logoutUser}>
@@ -109,6 +162,8 @@ const Index = ({ navigation, route }) => {
         </Button> */}
 
         {/* Instant Cash Card */}
+        <OptionsModal />
+
         <Box
           mx="5"
           mt="12"

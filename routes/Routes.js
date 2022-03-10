@@ -7,6 +7,7 @@ import UserAgreement from "../screens/UserAgreement";
 import Register from "../screens/auth/Register";
 import Login from "../screens/auth/Login";
 import UserIndex from "../screens/user/Index";
+import ProfileIndex from "../screens/user/profile/Index";
 import TransactionsIndex from "../screens/transactions/Index";
 import ListAccounts from "../screens/auth/ListAccounts";
 import SavingsIndex from "../screens/savings/Index";
@@ -17,6 +18,7 @@ import AddItemIndex from "../screens/AddItemIndex";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
+import { Button, Text, View } from "native-base";
 
 const Routes = () => {
   const Stack = createNativeStackNavigator();
@@ -64,10 +66,12 @@ const Routes = () => {
           headerShown: false,
         }}
       />
+
       <Tab.Screen
         name="SavingsIndex"
         component={SavingsIndex}
         options={{
+          tabBarLabel: "Savings",
           headerTitle: "",
           headerStyle: {
             height: 47,
@@ -102,7 +106,16 @@ const Routes = () => {
         options={{
           tabBarLabel: "Recent",
           tabBarLabelStyle: { fontSize: 13 },
-          headerShown: false,
+          // headerShown: false,
+          headerTitle: "",
+          headerStyle: {
+            height: 47,
+            backgroundColor: "#27272a",
+            shadowColor: "transparent",
+          },
+          headerTitleStyle: {
+            color: "#fff",
+          },
         }}
       />
     </Tab.Navigator>
@@ -135,11 +148,7 @@ const Routes = () => {
           options={{ title: "Sign In" }}
         />
 
-        <Stack.Screen
-          name="BanksList"
-          component={BanksList}
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="BanksList" component={BanksList} />
         <Stack.Screen
           name="UserAgreement"
           component={UserAgreement}
@@ -150,8 +159,35 @@ const Routes = () => {
           component={ListAccounts}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="SavingsCreate" component={SavingsCreate} />
-        <Stack.Screen name="SavingsShow" component={SavingsShow} />
+        <Stack.Screen
+          name="SavingsCreate"
+          component={SavingsCreate}
+          options={{
+            headerTitle: "New Saving Goal",
+            headerStyle: {
+              backgroundColor: "#27272a",
+              shadowColor: "transparent",
+            },
+            headerTitleStyle: {
+              color: "#fff",
+            },
+          }}
+        />
+        <Stack.Screen
+          name="SavingsShow"
+          component={SavingsShow}
+          options={{
+            headerTitle: "Edit Saving Goal",
+            headerStyle: {
+              backgroundColor: "#27272a",
+              shadowColor: "transparent",
+            },
+            headerTitleStyle: {
+              color: "#fff",
+            },
+          }}
+        />
+        <Stack.Screen name="ProfileIndex" component={ProfileIndex} />
       </Stack.Navigator>
     </>
   );

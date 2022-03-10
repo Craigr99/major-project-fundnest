@@ -66,7 +66,7 @@ const UserAgreement = ({ navigation, route }) => {
           .post(
             "https://ob.nordigen.com/api/v2/requisitions/",
             {
-              redirect: "https://keen-bohr-87e0df.netlify.app/",
+              redirect: "https://dreamy-ptolemy-403fe8.netlify.app/",
               // institution_id: route.params.id,
               institution_id: "SANDBOXFINANCE_SFIN0000", // test bank
             },
