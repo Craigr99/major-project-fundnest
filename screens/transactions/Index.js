@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native";
 import moment from "moment";
 import { useSelector } from "react-redux";
 
-const Index = () => {
+const Index = ({ navigation }) => {
   const [accountTransactions, setAccountTransactions] = useState([]);
   const [accountBalance, setAccountBalance] = useState("");
   const userAccountID = useSelector((state) => state.user.accountID.accountID);
@@ -82,7 +82,12 @@ const Index = () => {
           <Text fontSize="2xl" fontWeight={400} mb="5" color="white">
             Transactions
           </Text>
-          <Ionicons name="person-outline" size={32} color="white" />
+          <Ionicons
+            name="person-outline"
+            size={32}
+            color="white"
+            onPress={() => navigation.navigate("ProfileIndex")}
+          />
         </Flex>
       </Box>
       <Box bg="white" shadow={2} py="5" alignItems="center">

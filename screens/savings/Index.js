@@ -24,10 +24,9 @@ const Index = ({ navigation }) => {
 
   useEffect(() => {
     getSavings();
-  }, []);
+  });
 
   const getSavings = () => {
-    console.log("gettitng savings");
     axios
       .get("http://localhost:8000/savings/", {
         headers: {
@@ -41,7 +40,6 @@ const Index = ({ navigation }) => {
         setSavingsStatus(
           getPercentage(initialSavingsTotal, initialSavingsGoal)
         );
-        console.log(savingsList);
       })
       .catch((err) => console.log(err));
   };
@@ -49,7 +47,6 @@ const Index = ({ navigation }) => {
   const getTotalSavingGoal = (array) => {
     let sum = 0;
     for (var i = 0; i < array.length; i++) sum += parseInt(array[i].amount);
-    console.log(sum);
     setInitialSavingsGoal(sum);
     setTotalSavingsGoal(currencyFormatter(sum));
   };
@@ -58,7 +55,6 @@ const Index = ({ navigation }) => {
     let sum = 0;
     for (var i = 0; i < array.length; i++)
       sum += parseInt(array[i].current_amount);
-    console.log(sum);
     setInitialSavingsTotal(sum);
     setCurrentSavingsTotal(currencyFormatter(sum));
   };
@@ -113,7 +109,9 @@ const Index = ({ navigation }) => {
                 € {currentSavingsTotal || "0"}
               </Text>
             ) : (
-              <Text>€ 0</Text>
+              <Text fontSize={32} fontWeight="600" my="3">
+                € 0
+              </Text>
             )}
             <Box w="40%" maxW="400">
               <Progress colorScheme="emerald" value={savingsStatus || 0} />
@@ -124,12 +122,16 @@ const Index = ({ navigation }) => {
                 {currentSavingsTotal ? (
                   <>{currentSavingsTotal}</>
                 ) : (
-                  <Text>€ 0</Text>
+                  <Text fontSize={13} fontWeight="500" mt="2" mb="3">
+                    0
+                  </Text>
                 )}
                 / € {totalSavingsGoal}
               </Text>
             ) : (
-              <Text>€ 0/ € 0</Text>
+              <Text fontSize={13} fontWeight="500" mt="2" mb="3">
+                € 0/ € 0
+              </Text>
             )}
           </Flex>
         </Box>
@@ -151,15 +153,19 @@ const Index = ({ navigation }) => {
                     key={index}
                   >
                     <TouchableOpacity
-                      onPress={() => navigation.navigate("SavingsShow")}
+                      onPress={() =>
+                        navigation.navigate("SavingsShow", {
+                          ID: saving._id,
+                        })
+                      }
                     >
                       <Flex
                         direction="row"
                         justify="space-between"
                         alignItems="center"
                       >
-                        <FontAwesome
-                          name="plane"
+                        <Ionicons
+                          name={saving.icon}
                           size={36}
                           color={saving.icon_color}
                         />

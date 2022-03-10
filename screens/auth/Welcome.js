@@ -22,11 +22,11 @@ const Welcome = ({ navigation }) => {
         <Center>
           <Heading
             fontFamily="body"
-            fontWeight="400"
+            fontWeight="500"
             size="2xl"
             color="dark.50"
           >
-            App Name
+            FundNest
           </Heading>
         </Center>
         <Center flex={1}>
