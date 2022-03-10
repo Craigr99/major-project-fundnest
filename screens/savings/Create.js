@@ -3,6 +3,7 @@ import axios from "axios";
 import {
   Box,
   Button,
+  Center,
   CheckIcon,
   Flex,
   FormControl,
@@ -17,14 +18,44 @@ import { useState } from "react";
 import { SafeAreaView } from "react-native";
 import { useSelector } from "react-redux";
 import { CommonActions } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
 const Create = ({ navigation }) => {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [icon, setIcon] = useState("plane");
+  const [icon, setIcon] = useState("airplane-outline");
   const [colour, setColor] = useState("blue.200");
   const [iconColour, setIconColor] = useState("#3b82f6");
 
+  const selectIcons = [
+    {
+      name: "airplane-outline",
+    },
+    {
+      name: "american-football-outline",
+    },
+    {
+      name: "barbell-outline",
+    },
+    {
+      name: "basket-outline",
+    },
+    {
+      name: "beer-outline",
+    },
+    {
+      name: "bonfire-outline",
+    },
+    {
+      name: "car-outline",
+    },
+    {
+      name: "cart-outline",
+    },
+    {
+      name: "earth-outline",
+    },
+  ];
   const selectColours = [
     {
       // blue.100
@@ -166,21 +197,31 @@ const Create = ({ navigation }) => {
                 </FormControl.Label>
                 <Select
                   size="2xl"
-                  defaultValue="i1"
-                  selectedValue={icon}
+                  defaultValue="blue"
+                  // selectedValue={value}
                   accessibilityLabel="Select Icon"
                   placeholder="Icon"
                   onValueChange={(itemValue) => {
                     setIcon(itemValue);
                   }}
-                  _selectedItem={{
-                    bg: "teal.600",
-                    endIcon: <CheckIcon size={5} />,
-                  }}
                 >
-                  <Select.Item label="Icon1" value="i1" />
-                  <Select.Item label="Icon2" value="i2" />
-                  <Select.Item label="Icon3" value="i3" />
+                  {selectIcons.map((icon, index) => (
+                    <Select.Item
+                      key={index}
+                      label={
+                        <Ionicons
+                          key={index}
+                          name={icon.name}
+                          size={32}
+                          color={iconColour}
+                        />
+                      }
+                      selectedValue={icon.name}
+                      value={icon.name}
+                      my={1}
+                      fontSize="2xl"
+                    />
+                  ))}
                 </Select>
                 <FormControl.ErrorMessage>
                   Something is wrong.
