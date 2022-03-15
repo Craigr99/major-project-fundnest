@@ -95,6 +95,19 @@ const Index = ({ navigation, route }) => {
                 Profile
               </Text>
             </Flex>
+            <Flex direction="row" alignItems="center" mt={3}>
+              <Ionicons name="log-out-outline" size={22} color="#3b82f6" />
+              <Text
+                fontSize="md"
+                ml={3}
+                onPress={() => {
+                  setShowModal(false);
+                  logoutUser();
+                }}
+              >
+                Logout
+              </Text>
+            </Flex>
           </Modal.Body>
           <Modal.Footer>
             <Button.Group space={2}>
