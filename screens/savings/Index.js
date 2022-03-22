@@ -40,6 +40,7 @@ const Index = ({ navigation }) => {
         setSavingsStatus(
           getPercentage(initialSavingsTotal, initialSavingsGoal)
         );
+        // console.log(savingsList);
       })
       .catch((err) => console.log(err));
   };

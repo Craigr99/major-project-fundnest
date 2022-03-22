@@ -103,11 +103,9 @@ const UserAgreement = ({ navigation, route }) => {
               display: processComplete ? "none" : "block",
             }}
           >
-            <Text fontSize="xl">
-              You Have Selected:{" "}
-              <Text fontFamily="body" fontWeight={600}>
-                {route.params.name}
-              </Text>
+            <Text fontSize="xl">You Have Selected: </Text>
+            <Text fontSize="xl" fontWeight={700}>
+              {route.params.name}
             </Text>
             <Text mt="3" mb="2" fontSize="md" textAlign="center">
               As an end user you agree and accept the following:

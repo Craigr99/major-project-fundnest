@@ -132,16 +132,18 @@ const Index = ({ navigation, route }) => {
       <SafeAreaView>
         <Box mx="8" pt="10">
           <Flex direction="row" alignItems="center">
-            <Avatar
-              bg="purple.600"
-              alignSelf="center"
-              size="xl"
-              source={{
-                uri: "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
-              }}
-            >
-              RB
-            </Avatar>
+            <Pressable onPress={() => navigation.navigate("ProfileIndex")}>
+              <Avatar
+                bg="purple.600"
+                alignSelf="center"
+                size="xl"
+                source={{
+                  uri: "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
+                }}
+              >
+                RB
+              </Avatar>
+            </Pressable>
             <Flex ml="6" direction="column">
               <Text fontSize="lg" color="amber.400">
                 Welcome back,

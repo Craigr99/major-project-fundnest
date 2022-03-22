@@ -15,6 +15,7 @@ import SavingsCreate from "../screens/savings/Create";
 import SavingsShow from "../screens/savings/Show";
 import BillsIndex from "../screens/bills/Index";
 import AddItemIndex from "../screens/AddItemIndex";
+import AccountAddSuccess from "../screens/auth/AccountAddSuccess";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
@@ -158,6 +159,11 @@ const Routes = () => {
           name="ListAccounts"
           component={ListAccounts}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AccountAddSuccess"
+          component={AccountAddSuccess}
+          // options={{ headerShown: false }}
         />
         <Stack.Screen
           name="SavingsCreate"
