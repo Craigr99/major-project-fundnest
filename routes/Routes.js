@@ -193,7 +193,13 @@ const Routes = () => {
             },
           }}
         />
-        <Stack.Screen name="ProfileIndex" component={ProfileIndex} />
+        <Stack.Screen
+          name="ProfileIndex"
+          component={ProfileIndex}
+          options={{
+            headerTitle: "Profile",
+          }}
+        />
       </Stack.Navigator>
     </>
   );
