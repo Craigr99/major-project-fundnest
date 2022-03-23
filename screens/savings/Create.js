@@ -19,13 +19,28 @@ import { SafeAreaView } from "react-native";
 import { useSelector } from "react-redux";
 import { CommonActions } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { useForm, Controller } from "react-hook-form";
 
 const Create = ({ navigation }) => {
+  const [responseErrors, setResponseErrors] = useState(null);
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [icon, setIcon] = useState("airplane-outline");
-  const [colour, setColor] = useState("blue.200");
+  const [colour, setColor] = useState("#dbeafe");
   const [iconColour, setIconColor] = useState("#3b82f6");
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      amount: "",
+      icon: "",
+      colour: "",
+    },
+  });
 
   const selectIcons = [
     {
@@ -115,13 +130,18 @@ const Create = ({ navigation }) => {
 
   const authToken = useSelector((state) => state.auth.authToken);
 
-  const AddSaving = () => {
+  const addSaving = (data) => {
+    console.log(data);
+    console.log(icon);
+    console.log(colour);
+    console.log(iconColour);
+
     axios
       .post(
         "http://localhost:8000/savings/",
         {
-          name: name,
-          amount: amount,
+          name: data.name,
+          amount: data.amount,
           icon: icon,
           colour: colour,
           icon_color: iconColour,
@@ -154,40 +174,86 @@ const Create = ({ navigation }) => {
       <SafeAreaView>
         <Box mx="8" mt="6">
           <Stack space={6}>
-            <FormControl isRequired>
-              <FormControl.Label _text={{ fontSize: 12 }}>
-                Goal Name
-              </FormControl.Label>
-              <Input
-                type="text"
-                size="2xl"
-                variant="outline"
-                rounded="lg"
-                onChangeText={(newText) => setName(newText)}
+            <FormControl isInvalid={errors.name} isRequired>
+              <Controller
+                control={control}
+                rules={{
+                  required: true,
+                  minLength: 3,
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <>
+                    <FormControl.Label _text={{ fontSize: 12 }}>
+                      Goal Name
+                    </FormControl.Label>
+                    <Input
+                      type="text"
+                      size="2xl"
+                      variant="outline"
+                      rounded="lg"
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      value={value}
+                    />
+                  </>
+                )}
+                name="name"
               />
-              <FormControl.ErrorMessage
-                leftIcon={<WarningOutlineIcon size="xs" />}
-              >
-                Atleast 6 characters are required.
-              </FormControl.ErrorMessage>
+              {errors.name && (
+                <FormControl.ErrorMessage
+                  leftIcon={<WarningOutlineIcon size="xs" />}
+                >
+                  This field is required.
+                </FormControl.ErrorMessage>
+              )}
+              {errors.name?.type === "minLength" && (
+                <FormControl.ErrorMessage
+                  leftIcon={<WarningOutlineIcon size="xs" />}
+                >
+                  Name must be at least 3 characters long.
+                </FormControl.ErrorMessage>
+              )}
             </FormControl>
 
-            <FormControl isRequired>
-              <FormControl.Label _text={{ fontSize: 12 }}>
-                Amount
-              </FormControl.Label>
-              <Input
-                type="text"
-                size="2xl"
-                variant="outline"
-                rounded="lg"
-                onChangeText={(newText) => setAmount(newText)}
+            <FormControl isInvalid={errors.amount} isRequired>
+              <Controller
+                control={control}
+                rules={{
+                  required: true,
+                  pattern: /^[0-9]+$/,
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <>
+                    <FormControl.Label _text={{ fontSize: 12 }}>
+                      Amount
+                    </FormControl.Label>
+                    <Input
+                      type="text"
+                      size="2xl"
+                      variant="outline"
+                      rounded="lg"
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      value={value}
+                    />
+                  </>
+                )}
+                name="amount"
               />
-              <FormControl.ErrorMessage
-                leftIcon={<WarningOutlineIcon size="xs" />}
-              >
-                Atleast 6 characters are required.
-              </FormControl.ErrorMessage>
+              {errors.amount && (
+                <FormControl.ErrorMessage
+                  leftIcon={<WarningOutlineIcon size="xs" />}
+                >
+                  This field is required.
+                </FormControl.ErrorMessage>
+              )}
+              {errors.amount?.type === "pattern" && (
+                <FormControl.ErrorMessage
+                  leftIcon={<WarningOutlineIcon size="xs" />}
+                >
+                  This field must contain numbers only.
+                </FormControl.ErrorMessage>
+              )}
             </FormControl>
 
             <Flex direction="row" justifyContent="space-between">
@@ -260,7 +326,13 @@ const Create = ({ navigation }) => {
               </FormControl>
             </Flex>
 
-            <Button size="lg" mb="4" bg="blue.500" py="3" onPress={AddSaving}>
+            <Button
+              size="lg"
+              mb="4"
+              bg="blue.500"
+              py="3"
+              onPress={handleSubmit(addSaving)}
+            >
               Add
             </Button>
           </Stack>
