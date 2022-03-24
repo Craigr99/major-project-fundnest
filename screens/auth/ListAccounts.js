@@ -20,7 +20,7 @@ import { getUserAccount } from "../../features/user";
 
 const ListAccounts = ({ navigation, route }) => {
   const dispatch = useDispatch();
-
+  const bankName = useSelector((state) => state.bank.value);
   const [accountOne, setAccountOne] = useState({});
   const [accountTwo, setAccountTwo] = useState({});
   const [accountThree, setAccountThree] = useState({});
@@ -29,7 +29,6 @@ const ListAccounts = ({ navigation, route }) => {
   const { nordigenToken } = useSelector((state) => state.auth.nordigenToken);
   const { authToken } = useSelector((state) => state.auth.authToken);
   const [selectedAccount, setSelectedAccount] = useState("");
-
   // Get account details
   useEffect(() => {
     checkUserExistingAccounts();
@@ -106,6 +105,7 @@ const ListAccounts = ({ navigation, route }) => {
         "http://localhost:8000/accounts/",
         {
           account_id: accountIds[accountNumber],
+          bank_name: bankName,
         },
         {
           headers: {

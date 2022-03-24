@@ -5,6 +5,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import authReducer from "./features/auth";
 import userReducer from "./features/user";
+import bankReducer from "./features/bank";
 
 // components
 import Routes from "./routes/Routes";
@@ -14,6 +15,7 @@ const store = configureStore({
   reducer: {
     auth: authReducer,
     user: userReducer,
+    bank: bankReducer,
   },
 });
 

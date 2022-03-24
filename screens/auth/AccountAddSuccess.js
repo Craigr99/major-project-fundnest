@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 
 const AccountAddSuccess = ({ navigation, route }) => {
+  const bankName = useSelector((state) => state.bank.value);
   const [accounts, setAccounts] = useState([]);
   const { nordigenToken } = useSelector((state) => state.auth.nordigenToken);
   const userAccountID = useSelector((state) => state.user.accountID.accountID);
@@ -64,9 +65,17 @@ const AccountAddSuccess = ({ navigation, route }) => {
                   color="coolGray.500"
                   fontWeight={500}
                   textTransform="uppercase"
+                  maxW="90%"
+                >
+                  {bankName} - {accounts.name}
+                </Text>
+                {/* <Text
+                  color="coolGray.500"
+                  fontWeight={500}
+                  textTransform="uppercase"
                 >
                   {accounts.name}
-                </Text>
+                </Text> */}
                 <Text fontSize="xl" fontWeight={600}>
                   {accounts.ownerName}
                 </Text>
