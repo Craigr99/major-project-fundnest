@@ -97,8 +97,15 @@ const Routes = () => {
         component={BillsIndex}
         options={{
           tabBarLabel: "Bills",
-          tabBarLabelStyle: { fontSize: 13 },
-          headerShown: false,
+          headerTitle: "",
+          headerStyle: {
+            height: 47,
+            backgroundColor: "#27272a",
+            shadowColor: "transparent",
+          },
+          headerTitleStyle: {
+            color: "#fff",
+          },
         }}
       />
       <Tab.Screen
