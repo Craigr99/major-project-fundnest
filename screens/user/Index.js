@@ -18,15 +18,23 @@ import {
   Spinner,
   Modal,
   CloseIcon,
+  Menu,
+  Popover,
+  ChevronDownIcon,
+  useDisclose,
+  Center,
+  Actionsheet,
 } from "native-base";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { getUserAccount } from "../../features/user";
 
 const Index = ({ navigation, route }) => {
   const testarray = [1, 2, 3];
   // State
+  const dispatch = useDispatch();
   const userAccountID = useSelector((state) => state.user.accountID.accountID);
   const user = useSelector((state) => state.user.value);
   const nordigenToken = useSelector(
@@ -35,12 +43,66 @@ const Index = ({ navigation, route }) => {
   const authToken = useSelector((state) => state.auth.authToken);
   const [accountBalance, setAccountBalance] = useState("");
   const [showModal, setShowModal] = useState(false);
-  // get account balance
+  const [accountIDs, setAccountIDs] = useState([]);
+  const [userBankAccounts, setUserBankAccounts] = useState([]);
+  const [filteredAccounts, setFilteredAccounts] = useState([]);
+
   useEffect(() => {
+    getAccounts();
     getAccountBalance();
-  }, []);
+  }, [userAccountID]);
+
+  const getAccounts = () => {
+    axios
+      .get(`http://localhost:8000/accounts`, {
+        headers: {
+          Authorization: `Bearer ${authToken.authToken}`,
+        },
+      })
+      .then((res) => {
+        setUserBankAccounts(res.data.accounts);
+        // res.data.accounts.forEach((account) => {
+        //   setAccountIDs((prevArr) => [...prevArr, account.account_id]);
+        // });
+        // getAccountsDetails();
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const getAccountsDetails = () => {
+    // filter accountIds array to remove any duplicates
+    const filteredArray = accountIDs.filter((v, i) => {
+      return accountIDs.map((val) => val).indexOf(v) == i;
+    });
+
+    filteredArray.forEach((accountID) => {
+      axios
+        .get(`https://ob.nordigen.com/api/v2/accounts/${accountID}/details/`, {
+          headers: {
+            Authorization: `Bearer ${nordigenToken}`,
+          },
+        })
+        .then((res) => {
+          setUserBankAccounts((prevAccounts) => [
+            accountID,
+            ...prevAccounts,
+            res.data.account,
+          ]);
+        })
+        .catch((err) => console.log(err));
+    });
+
+    // filter array of bank accounts - removing any duplicates
+    const ids = userBankAccounts.map((o) => o.resourceId);
+    const filtered = userBankAccounts.filter(
+      ({ resourceId }, index) => !ids.includes(resourceId, index + 1)
+    );
+    setFilteredAccounts(filtered);
+    console.log("hre", filteredAccounts);
+  };
 
   const getAccountBalance = () => {
+    console.log(userAccountID);
     axios
       .get(
         `https://ob.nordigen.com/api/v2/accounts/${userAccountID}/balances/`,
@@ -51,7 +113,7 @@ const Index = ({ navigation, route }) => {
         }
       )
       .then((res) => {
-        console.log(res.data.balances[0]);
+        // console.log(res.data.balances[0]);
         setAccountBalance(res.data.balances[0]);
       })
       .catch((err) => console.log(err));
@@ -127,6 +189,63 @@ const Index = ({ navigation, route }) => {
     );
   };
 
+  const selectAccount = (props) => {
+    dispatch(getUserAccount({ accountID: props }));
+    getAccountBalance();
+  };
+
+  const ActionSheet = () => {
+    const { isOpen, onOpen, onClose } = useDisclose();
+    return (
+      <Center>
+        <Pressable onPress={onOpen}>
+          <ChevronDownIcon size={6} />
+        </Pressable>
+        <Actionsheet isOpen={isOpen} onClose={onClose}>
+          <Actionsheet.Content>
+            <Box w="100%" h={60} px={4} justifyContent="center">
+              <Text
+                fontSize="16"
+                color="gray.500"
+                _dark={{
+                  color: "gray.300",
+                }}
+              >
+                Accounts
+              </Text>
+            </Box>
+            {userBankAccounts ? (
+              userBankAccounts.map((account) => (
+                <Actionsheet.Item
+                  display="flex"
+                  onPress={() => {
+                    selectAccount(account.account_id);
+                    onClose();
+                  }}
+                >
+                  <Text
+                    color="coolGray.500"
+                    fontWeight={500}
+                    textTransform="uppercase"
+                  >
+                    {account.bank_name}
+                  </Text>
+                  {/*
+                  <Text fontSize="xl" fontWeight={600}>
+                    {account.ownerName}
+                  </Text>
+                  <Text>Product: {account.product}</Text> */}
+                </Actionsheet.Item>
+              ))
+            ) : (
+              <Actionsheet.Item>No accounts found</Actionsheet.Item>
+            )}
+          </Actionsheet.Content>
+        </Actionsheet>
+      </Center>
+    );
+  };
+
   return (
     <View bg="dark.100" h="1/2" w="full" borderBottomRadius="36">
       <SafeAreaView>
@@ -141,7 +260,7 @@ const Index = ({ navigation, route }) => {
                 //   uri: "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
                 // }}
               >
-                JD
+                {user.name.split(" ")[0][0]}
               </Avatar>
             </Pressable>
             <Flex ml="6" direction="column">
@@ -172,13 +291,10 @@ const Index = ({ navigation, route }) => {
             </Button>
           </Flex>
         </Box>
-        {/* <Button size="lg" mb="4" bg="blue.500" py="3" onPress={logoutUser}>
-          Logout
-        </Button> */}
 
-        {/* Instant Cash Card */}
         <OptionsModal />
 
+        {/* Instant Cash Card */}
         <Box
           mx="5"
           mt="12"
@@ -190,16 +306,46 @@ const Index = ({ navigation, route }) => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Flex>
-            <Text fontSize="lg" fontWeight={600}>
-              Instant
-            </Text>
-            <Text color="coolGray.500">Cash Available</Text>
+          <Flex direction="row" alignItems="center">
+            <Box mr={2}>
+              <Text fontSize="lg" fontWeight={600}>
+                Instant
+              </Text>
+              <Text color="coolGray.500">Cash Available</Text>
+            </Box>
+            <ActionSheet />
+            {/* <Box alignItems="center">
+              <Popover
+                trigger={(triggerProps) => {
+                  return (
+                    <Pressable {...triggerProps}>
+                      <ChevronDownIcon size={6} />
+                    </Pressable>
+                  );
+                }}
+              >
+                <Popover.Content accessibilityLabel="Delete Customerd" w="56">
+                  <Popover.Arrow />
+                  <Popover.CloseButton />
+                  <Popover.Header>Select Account</Popover.Header>
+                  <Popover.Body>
+                    This will remove all data relating to Alex. This action
+                    cannot be reversed. Deleted data can not be recovered.
+                  </Popover.Body>
+                  <Popover.Footer justifyContent="flex-end">
+                    <Button.Group space={2}>
+                      <Button colorScheme="coolGray" variant="ghost">
+                        Cancel
+                      </Button>
+                    </Button.Group>
+                  </Popover.Footer>
+                </Popover.Content>
+              </Popover>
+            </Box> */}
           </Flex>
           {accountBalance ? (
             <Text fontWeight={700} fontSize="xl">
               €{accountBalance.balanceAmount.amount}
-              {/* €429.00 */}
             </Text>
           ) : (
             <Spinner color="amber.500" size="sm" />

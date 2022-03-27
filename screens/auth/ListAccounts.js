@@ -43,9 +43,9 @@ const ListAccounts = ({ navigation, route }) => {
       })
       .then((res) => {
         res.data.accounts.forEach((account) => {
-          // console.log("user accounts", account.account_id);
+          console.log("user accounts", account.account_id);
           setExistingAccounts(account.account_id);
-          console.log("existinf accounts", existingAccounts);
+          // console.log("existinf accounts", existingAccounts);
         });
         getAccounts();
       })
@@ -58,7 +58,6 @@ const ListAccounts = ({ navigation, route }) => {
   const getAccounts = () => {
     // account IDs from previous route
     setAccountIds(route.params.accounts);
-
     if (!existingAccounts.includes(accountIds[0])) {
       axios
         .get(

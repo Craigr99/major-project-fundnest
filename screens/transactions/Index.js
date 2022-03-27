@@ -18,7 +18,7 @@ const Index = ({ navigation }) => {
     // get account transactions
     getTransactions();
     getAccountBalance();
-  }, []);
+  }, [userAccountID]);
 
   const getTransactions = () => {
     axios
@@ -135,8 +135,11 @@ const Index = ({ navigation }) => {
         </Badge>
       </Flex>
 
-      <Box mx="7" mt="8">
-        <ScrollView showsVerticalScrollIndicator={false}>
+      <Box mx="7" mt="8" flex={1}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{ paddingBottom: 490 }}
+        >
           {accountTransactions ? (
             accountTransactions.map((transaction, index) => {
               return (
