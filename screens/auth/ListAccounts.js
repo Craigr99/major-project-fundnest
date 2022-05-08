@@ -32,6 +32,7 @@ const ListAccounts = ({ navigation, route }) => {
   // Get account details
   useEffect(() => {
     checkUserExistingAccounts();
+    getAccounts();
   }, []);
 
   const checkUserExistingAccounts = () => {
@@ -42,15 +43,19 @@ const ListAccounts = ({ navigation, route }) => {
         },
       })
       .then((res) => {
-        res.data.accounts.forEach((account) => {
-          console.log("user accounts", account.account_id);
-          setExistingAccounts(account.account_id);
-          // console.log("existinf accounts", existingAccounts);
-        });
-        getAccounts();
+        setExistingAccounts(
+          res.data.accounts.map((account) => account.account_id)
+        );
+        console.log("existing", existingAccounts);
+        // res.data.accounts.forEach((account) => {
+        //   console.log("user accounts", account.account_id);
+        //   setExistingAccounts(account.account_id);
+        //   // console.log("existinf accounts", existingAccounts);
+        // });
+        // getAccounts();
       })
       .catch((err) => {
-        getAccounts();
+        // getAccounts();
         console.log("error", err);
       });
   };

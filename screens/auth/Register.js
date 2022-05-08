@@ -195,6 +195,7 @@ const Register = ({ navigation }) => {
                           onChangeText={onChange}
                           onBlur={onBlur}
                           value={value}
+                          autoCapitalize="none"
                         />
                       </>
                     )}

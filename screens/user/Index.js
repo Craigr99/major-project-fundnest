@@ -24,6 +24,7 @@ import {
   useDisclose,
   Center,
   Actionsheet,
+  useToast,
 } from "native-base";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native";
@@ -32,7 +33,6 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { getUserAccount } from "../../features/user";
 
 const Index = ({ navigation, route }) => {
-  const testarray = [1, 2, 3];
   // State
   const dispatch = useDispatch();
   const userAccountID = useSelector((state) => state.user.accountID.accountID);
@@ -46,11 +46,15 @@ const Index = ({ navigation, route }) => {
   const [accountIDs, setAccountIDs] = useState([]);
   const [userBankAccounts, setUserBankAccounts] = useState([]);
   const [filteredAccounts, setFilteredAccounts] = useState([]);
+  const [savingsList, setSavingsList] = useState([]);
+  const [currentSavingsTotal, setCurrentSavingsTotal] = useState("");
+  const toast = useToast();
 
   useEffect(() => {
     getAccounts();
     getAccountBalance();
-  }, [userAccountID]);
+    getSavings();
+  }, []);
 
   const getAccounts = () => {
     axios
@@ -61,48 +65,11 @@ const Index = ({ navigation, route }) => {
       })
       .then((res) => {
         setUserBankAccounts(res.data.accounts);
-        // res.data.accounts.forEach((account) => {
-        //   setAccountIDs((prevArr) => [...prevArr, account.account_id]);
-        // });
-        // getAccountsDetails();
       })
       .catch((err) => console.log(err));
   };
 
-  const getAccountsDetails = () => {
-    // filter accountIds array to remove any duplicates
-    const filteredArray = accountIDs.filter((v, i) => {
-      return accountIDs.map((val) => val).indexOf(v) == i;
-    });
-
-    filteredArray.forEach((accountID) => {
-      axios
-        .get(`https://ob.nordigen.com/api/v2/accounts/${accountID}/details/`, {
-          headers: {
-            Authorization: `Bearer ${nordigenToken}`,
-          },
-        })
-        .then((res) => {
-          setUserBankAccounts((prevAccounts) => [
-            accountID,
-            ...prevAccounts,
-            res.data.account,
-          ]);
-        })
-        .catch((err) => console.log(err));
-    });
-
-    // filter array of bank accounts - removing any duplicates
-    const ids = userBankAccounts.map((o) => o.resourceId);
-    const filtered = userBankAccounts.filter(
-      ({ resourceId }, index) => !ids.includes(resourceId, index + 1)
-    );
-    setFilteredAccounts(filtered);
-    console.log("hre", filteredAccounts);
-  };
-
   const getAccountBalance = () => {
-    console.log(userAccountID);
     axios
       .get(
         `https://ob.nordigen.com/api/v2/accounts/${userAccountID}/balances/`,
@@ -113,7 +80,6 @@ const Index = ({ navigation, route }) => {
         }
       )
       .then((res) => {
-        // console.log(res.data.balances[0]);
         setAccountBalance(res.data.balances[0]);
       })
       .catch((err) => console.log(err));
@@ -192,6 +158,11 @@ const Index = ({ navigation, route }) => {
   const selectAccount = (props) => {
     dispatch(getUserAccount({ accountID: props }));
     getAccountBalance();
+    toast.show({
+      title: "Account Switched",
+      status: "info",
+      placement: "top",
+    });
   };
 
   const ActionSheet = () => {
@@ -215,8 +186,9 @@ const Index = ({ navigation, route }) => {
               </Text>
             </Box>
             {userBankAccounts ? (
-              userBankAccounts.map((account) => (
+              userBankAccounts.map((account, index) => (
                 <Actionsheet.Item
+                  key={index}
                   display="flex"
                   onPress={() => {
                     selectAccount(account.account_id);
@@ -224,17 +196,17 @@ const Index = ({ navigation, route }) => {
                   }}
                 >
                   <Text
-                    color="coolGray.500"
+                    color="blue.500"
                     fontWeight={500}
                     textTransform="uppercase"
                   >
                     {account.bank_name}
                   </Text>
-                  {/*
+
                   <Text fontSize="xl" fontWeight={600}>
-                    {account.ownerName}
+                    {account.owner_name}
                   </Text>
-                  <Text>Product: {account.product}</Text> */}
+                  <Text>Product: {account.product}</Text>
                 </Actionsheet.Item>
               ))
             ) : (
@@ -246,6 +218,60 @@ const Index = ({ navigation, route }) => {
     );
   };
 
+  const stringToColor = (string) => {
+    let hash = 0;
+    let i;
+
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    let color = "#";
+
+    for (i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    /* eslint-enable no-bitwise */
+
+    return color;
+  };
+
+  const getSavings = () => {
+    axios
+      .get("http://localhost:8000/savings/", {
+        headers: {
+          Authorization: `Bearer ${authToken.authToken}`,
+        },
+      })
+      .then((res) => {
+        setSavingsList(res.data.savings.slice(0, 3));
+        console.log(savingsList);
+        getCurrentSavingsTotal(savingsList);
+        console.log("total", currentSavingsTotal);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const getCurrentSavingsTotal = (array) => {
+    let sum = 0;
+    for (var i = 0; i < array.length; i++)
+      sum += parseInt(array[i].current_amount);
+    setCurrentSavingsTotal(currencyFormatter(sum));
+  };
+
+  const currencyFormatter = (amount) => {
+    if (!amount) return null;
+    amount = parseInt(amount);
+    // console.log(amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,"));
+    return amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
+  };
+
+  const getPercentage = (partialValue, totalValue) => {
+    return (100 * partialValue) / totalValue;
+  };
+
   return (
     <View bg="dark.100" h="1/2" w="full" borderBottomRadius="36">
       <SafeAreaView>
@@ -253,7 +279,7 @@ const Index = ({ navigation, route }) => {
           <Flex direction="row" alignItems="center">
             <Pressable onPress={() => navigation.navigate("ProfileIndex")}>
               <Avatar
-                bg="purple.600"
+                bg={stringToColor(user.name)}
                 alignSelf="center"
                 size="xl"
                 // source={{
@@ -353,70 +379,102 @@ const Index = ({ navigation, route }) => {
         </Box>
 
         {/* Savings Card */}
-        <Box
-          mx="5"
-          mt="8"
-          px="6"
-          py="8"
-          bg="white"
-          borderRadius="xl"
-          shadow="2"
-        >
-          <Flex
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
+        <Pressable onPress={() => navigation.navigate("SavingsIndex")}>
+          <Box
+            mx="5"
+            mt="8"
+            px="6"
+            py="8"
+            bg="white"
+            borderRadius="xl"
+            shadow="2"
           >
-            <Box>
-              <Text fontSize="lg" fontWeight={600}>
-                Savings
-              </Text>
-              <Text color="coolGray.500">In your savings</Text>
-            </Box>
-            <Text fontWeight={700} fontSize="xl">
-              €1,292.00
-            </Text>
-          </Flex>
-          <Flex mt="4" direction="row" flexWrap="wrap" justify="space-between">
-            {testarray.map((item, index) => (
-              <Box
-                key={index}
-                borderColor="coolGray.200"
-                borderWidth={1}
-                p="3"
-                w="48%"
-                mb={4}
-              >
-                <FontAwesome name="plane" size={30} color="#4584FF" />
-                <Text fontWeight={600} fontSize="md" my="3">
-                  €250.00/
-                  <Text fontWeight={200} fontSize="sm" color="coolGray.500">
-                    €350.00
-                  </Text>
+            <Flex
+              flexDirection="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Box>
+                <Text fontSize="lg" fontWeight={600}>
+                  Savings
                 </Text>
-                <Progress colorScheme="emerald" value={55} mb="5" />
+                <Text color="coolGray.500">In your savings</Text>
               </Box>
-            ))}
-            {/* Add button */}
-            <Box alignSelf="center" alignItems="center" w="48%">
-              <Pressable onPress={() => navigation.navigate("SavingsCreate")}>
-                <Box
-                  bg="white"
-                  w="68"
-                  h="68"
-                  borderWidth="1"
-                  borderColor="coolGray.200"
-                  shadow="1"
-                  rounded="full"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Ionicons name="add" size={32} />
-                </Box>
-              </Pressable>
-            </Box>
-          </Flex>
-        </Box>
+              <Text fontWeight={700} fontSize="xl">
+                €{currentSavingsTotal || "0"}
+              </Text>
+            </Flex>
+            <Flex
+              mt="4"
+              direction="row"
+              flexWrap="wrap"
+              justify="space-between"
+            >
+              {savingsList &&
+                savingsList.map((saving, index) => (
+                  <Box
+                    key={index}
+                    borderColor="coolGray.200"
+                    borderWidth={1}
+                    p="3"
+                    w="48%"
+                    mb={4}
+                  >
+                    <Pressable
+                      onPress={() =>
+                        navigation.navigate("SavingsShow", {
+                          ID: saving._id,
+                        })
+                      }
+                    >
+                      <Ionicons
+                        name={saving.icon}
+                        size={30}
+                        color={saving.icon_color}
+                      />
+                      <Text fontWeight={600} fontSize="md" my="3">
+                        €{currencyFormatter(saving.current_amount)}/
+                        <Text
+                          fontWeight={200}
+                          fontSize="sm"
+                          color="coolGray.500"
+                        >
+                          €{currencyFormatter(saving.amount)}
+                        </Text>
+                      </Text>
+                      <Progress
+                        bg={saving.colour}
+                        // colorScheme="emerald"
+                        value={
+                          getPercentage(saving.current_amount, saving.amount) ||
+                          0
+                        }
+                        mb="5"
+                      />
+                    </Pressable>
+                  </Box>
+                ))}
+              {/* Add button */}
+              <Box alignSelf="center" alignItems="center" w="48%">
+                <Pressable onPress={() => navigation.navigate("SavingsCreate")}>
+                  <Box
+                    bg="white"
+                    w="68"
+                    h="68"
+                    borderWidth="1"
+                    borderColor="coolGray.200"
+                    shadow="1"
+                    rounded="full"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Ionicons name="add" size={32} />
+                  </Box>
+                </Pressable>
+              </Box>
+            </Flex>
+          </Box>
+        </Pressable>
       </SafeAreaView>
     </View>
   );

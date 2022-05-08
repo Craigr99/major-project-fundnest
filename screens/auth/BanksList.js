@@ -15,7 +15,7 @@ import {
   Text,
   Divider,
 } from "native-base";
-import { setBankName } from "../features/bank";
+import { setBankName } from "../../features/bank";
 
 const BanksList = ({ navigation }) => {
   const dispatch = useDispatch();
