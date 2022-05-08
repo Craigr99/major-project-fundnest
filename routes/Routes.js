@@ -2,8 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // SCREENS
 import Welcome from "../screens/auth/Welcome";
-import BanksList from "../screens/BanksList";
-import UserAgreement from "../screens/UserAgreement";
+import BanksList from "../screens/auth/BanksList";
+import UserAgreement from "../screens/auth/UserAgreement";
 import Register from "../screens/auth/Register";
 import Login from "../screens/auth/Login";
 import UserIndex from "../screens/user/Index";
@@ -14,6 +14,7 @@ import SavingsIndex from "../screens/savings/Index";
 import SavingsCreate from "../screens/savings/Create";
 import SavingsShow from "../screens/savings/Show";
 import BillsIndex from "../screens/bills/Index";
+import BillsCreate from "../screens/bills/Create";
 import AddItemIndex from "../screens/AddItemIndex";
 import AccountAddSuccess from "../screens/auth/AccountAddSuccess";
 
@@ -97,8 +98,15 @@ const Routes = () => {
         component={BillsIndex}
         options={{
           tabBarLabel: "Bills",
-          tabBarLabelStyle: { fontSize: 13 },
-          headerShown: false,
+          headerTitle: "",
+          headerStyle: {
+            height: 47,
+            backgroundColor: "#27272a",
+            shadowColor: "transparent",
+          },
+          headerTitleStyle: {
+            color: "#fff",
+          },
         }}
       />
       <Tab.Screen
@@ -193,7 +201,27 @@ const Routes = () => {
             },
           }}
         />
-        <Stack.Screen name="ProfileIndex" component={ProfileIndex} />
+        <Stack.Screen
+          name="ProfileIndex"
+          component={ProfileIndex}
+          options={{
+            headerTitle: "Profile",
+          }}
+        />
+        <Stack.Screen
+          name="BillsCreate"
+          component={BillsCreate}
+          options={{
+            headerTitle: "New Bill",
+            headerStyle: {
+              backgroundColor: "#27272a",
+              shadowColor: "transparent",
+            },
+            headerTitleStyle: {
+              color: "#fff",
+            },
+          }}
+        />
       </Stack.Navigator>
     </>
   );

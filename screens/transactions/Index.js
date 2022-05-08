@@ -15,10 +15,10 @@ const Index = ({ navigation }) => {
   );
 
   useEffect(() => {
-    // get account transactions
+    // get account transactions & balance
     getTransactions();
     getAccountBalance();
-  }, []);
+  }, [userAccountID]);
 
   const getTransactions = () => {
     axios
@@ -32,7 +32,7 @@ const Index = ({ navigation }) => {
       )
       .then((res) => {
         console.log(res.data.transactions.booked.slice(0, 5));
-        setAccountTransactions(res.data.transactions.booked.slice(0, 14));
+        setAccountTransactions(res.data.transactions.booked.slice(0, 20));
       })
       .catch((err) => console.log(err));
   };
@@ -135,8 +135,11 @@ const Index = ({ navigation }) => {
         </Badge>
       </Flex>
 
-      <Box mx="7" mt="8">
-        <ScrollView showsVerticalScrollIndicator={false}>
+      <Box mx="7" mt="8" flex={1}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{ paddingBottom: 490 }}
+        >
           {accountTransactions ? (
             accountTransactions.map((transaction, index) => {
               return (

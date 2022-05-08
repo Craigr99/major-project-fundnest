@@ -136,6 +136,7 @@ const Login = ({ navigation }) => {
                           onChangeText={onChange}
                           onBlur={onBlur}
                           value={value}
+                          autoCapitalize="none"
                         />
                       </>
                     )}

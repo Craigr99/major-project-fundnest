@@ -90,9 +90,7 @@ const AddItemIndex = ({ navigation }) => {
             <Ionicons name="add-outline" size={28} color="#3b82f6" />
           </Box>
         </Box>
-        <Pressable
-          onPress={() => console.log(navigation.navigate("BanksList"))}
-        >
+        <Pressable onPress={() => navigation.navigate("BanksList")}>
           <Box
             flexDir="row"
             alignItems="center"

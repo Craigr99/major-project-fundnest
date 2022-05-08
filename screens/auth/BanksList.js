@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import {
   NativeBaseProvider,
@@ -15,8 +15,10 @@ import {
   Text,
   Divider,
 } from "native-base";
+import { setBankName } from "../../features/bank";
 
 const BanksList = ({ navigation }) => {
+  const dispatch = useDispatch();
   const { nordigenToken } = useSelector((state) => state.auth.nordigenToken);
   const [banksList, setBanksList] = useState([]);
 
@@ -39,6 +41,8 @@ const BanksList = ({ navigation }) => {
 
   const selectBank = (props) => {
     console.log("selected", props);
+    // set bank name in state
+    dispatch(setBankName(props.name));
     navigation.navigate("UserAgreement", {
       name: props.name,
       id: props.id,

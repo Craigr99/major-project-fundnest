@@ -20,7 +20,7 @@ import { getUserAccount } from "../../features/user";
 
 const ListAccounts = ({ navigation, route }) => {
   const dispatch = useDispatch();
-
+  const bankName = useSelector((state) => state.bank.value);
   const [accountOne, setAccountOne] = useState({});
   const [accountTwo, setAccountTwo] = useState({});
   const [accountThree, setAccountThree] = useState({});
@@ -29,10 +29,10 @@ const ListAccounts = ({ navigation, route }) => {
   const { nordigenToken } = useSelector((state) => state.auth.nordigenToken);
   const { authToken } = useSelector((state) => state.auth.authToken);
   const [selectedAccount, setSelectedAccount] = useState("");
-
   // Get account details
   useEffect(() => {
     checkUserExistingAccounts();
+    getAccounts();
   }, []);
 
   const checkUserExistingAccounts = () => {
@@ -43,15 +43,19 @@ const ListAccounts = ({ navigation, route }) => {
         },
       })
       .then((res) => {
-        res.data.accounts.forEach((account) => {
-          // console.log("user accounts", account.account_id);
-          setExistingAccounts(account.account_id);
-          console.log("existinf accounts", existingAccounts);
-        });
-        getAccounts();
+        setExistingAccounts(
+          res.data.accounts.map((account) => account.account_id)
+        );
+        console.log("existing", existingAccounts);
+        // res.data.accounts.forEach((account) => {
+        //   console.log("user accounts", account.account_id);
+        //   setExistingAccounts(account.account_id);
+        //   // console.log("existinf accounts", existingAccounts);
+        // });
+        // getAccounts();
       })
       .catch((err) => {
-        getAccounts();
+        // getAccounts();
         console.log("error", err);
       });
   };
@@ -59,7 +63,6 @@ const ListAccounts = ({ navigation, route }) => {
   const getAccounts = () => {
     // account IDs from previous route
     setAccountIds(route.params.accounts);
-
     if (!existingAccounts.includes(accountIds[0])) {
       axios
         .get(
@@ -106,6 +109,7 @@ const ListAccounts = ({ navigation, route }) => {
         "http://localhost:8000/accounts/",
         {
           account_id: accountIds[accountNumber],
+          bank_name: bankName,
         },
         {
           headers: {

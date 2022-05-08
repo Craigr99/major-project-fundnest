@@ -25,6 +25,9 @@ const Index = ({ navigation }) => {
   useEffect(() => {
     getSavings();
   });
+  if (!savingsList) {
+    return null;
+  }
 
   const getSavings = () => {
     axios
@@ -205,7 +208,9 @@ const Index = ({ navigation }) => {
                       <Text fontWeight={600} fontSize="14" mt="3" mb="2">
                         {saving.name}
                       </Text>
-                      <Text fontSize={12}>€{saving.amount}.00</Text>
+                      <Text fontSize={12}>
+                        €{currencyFormatter(parseInt(saving.amount))}
+                      </Text>
                     </TouchableOpacity>
                   </Box>
                 ))}
